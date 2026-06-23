@@ -1,4 +1,4 @@
-package com.r4men.java_chess;
+package com.r4men.stockfish_j;
 
 public class Move {
     public static class Flags {

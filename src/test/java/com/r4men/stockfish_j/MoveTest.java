@@ -1,4 +1,4 @@
-package com.r4men.java_chess;
+package com.r4men.stockfish_j;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

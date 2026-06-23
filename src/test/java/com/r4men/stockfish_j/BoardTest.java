@@ -1,6 +1,4 @@
-package com.r4men.java_chess;
-
-import org.junit.jupiter.api.Test;
+package com.r4men.stockfish_j;
 
 import static org.junit.jupiter.api.Assertions.*;
 

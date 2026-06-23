@@ -1,6 +1,5 @@
-package com.r4men.java_chess;
+package com.r4men.stockfish_j;
 
-import picocli.CommandLine;
 import picocli.CommandLine.*;
 
 @Command(
