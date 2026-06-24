@@ -1,4 +1,4 @@
-package com.r4men.stockfish_j;
+package com.r4men.java_chess;
 
 import java.util.ArrayList;
 import java.util.List;

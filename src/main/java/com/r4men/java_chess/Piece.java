@@ -1,7 +1,8 @@
-package com.r4men.stockfish_j;
+package com.r4men.java_chess;
 
 public class Piece {
     public static final Piece EMPTY = new Piece();
+    public static final Piece OFF_BOARD = new Piece(PieceType.OFF_BOARD, Color.OFF_BOARD, 'X');
 
     public static final Piece WHITE_BISHOP = new Piece(PieceType.BISHOP, Color.WHITE, 'B');
     public static final Piece WHITE_KING = new Piece(PieceType.KING, Color.WHITE, 'K');
@@ -29,13 +30,15 @@ public class Piece {
         QUEEN,
         ROOK,
         OCC,
-        EMPTY;
+        EMPTY,
+        OFF_BOARD;
     }
 
     public enum Color {
         WHITE,
         BLACK,
-        EMPTY;
+        EMPTY,
+        OFF_BOARD;
 
         public boolean isWhite() {
             return this == WHITE;
@@ -87,6 +90,10 @@ public class Piece {
 
     public boolean isEmpty() {
         return pieceType == PieceType.EMPTY;
+    }
+
+    public boolean isOffBoard() {
+        return pieceType == PieceType.OFF_BOARD;
     }
 
     public boolean isWhite() {
