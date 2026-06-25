@@ -1246,15 +1246,62 @@ public class Board {
     public String toString() {
         StringBuilder sb = new StringBuilder();
 
-        for (int y = 0; y < 8; y++) {
-            for (int x = 0; x < 8; x++) {
-                int index = 64 - (8 * (y + 1)) + x;
 
-                sb.append(pieces.get(index).getPieceChar());
+        sb.append("FEN:\n").append(toFEN()).append("\n\n");
+        sb.append(get10x12BoardString()).append("\n");
+        sb.append(get8x8BoardString());
+
+        return sb.toString();
+    }
+
+    public String get10x12BoardString() {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("10x12 Board:\n");
+        sb.append("    X   A   B   C   D   E   F   G   H   X\n");
+        sb.append("  +---+---+---+---+---+---+---+---+---+---+\n");
+        for (int y = 11; y >= 0; y--) {
+            if (y > 9 || y < 2) {
+                sb.append("X | ");
+            } else {
+                sb.append(y - 1).append(" | ");
             }
 
-            sb.append('\n');
+            for (int x = 0; x < 10; x++) {
+                sb.append(board10x12.get(y*10 + x)).append(" | ");
+            }
+
+            if (y > 9 || y < 2) {
+                sb.append("X").append("\n");
+            } else {
+                sb.append(y - 1).append("\n");
+            }
+
+            sb.append("  +---+---+---+---+---+---+---+---+---+---+").append("\n");
         }
+        sb.append("    X   A   B   C   D   E   F   G   H   X\n");
+
+        return sb.toString();
+    }
+
+    public String get8x8BoardString() {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("8x8 Board:\n");
+        sb.append("    A   B   C   D   E   F   G   H\n");
+        sb.append("  +---+---+---+---+---+---+---+---+\n");
+        for (int y = 7; y >= 0; y--) {
+            sb.append(y + 1).append(" | ");
+
+            for (int x = 0; x < 8; x++) {
+                sb.append(board10x12.get(10 * (y + 2) + (x + 1))).append(" | ");
+            }
+
+            sb.append(y + 1).append("\n");
+
+            sb.append("  +---+---+---+---+---+---+---+---+").append("\n");
+        }
+        sb.append("    A   B   C   D   E   F   G   H\n");
 
         return sb.toString();
     }
