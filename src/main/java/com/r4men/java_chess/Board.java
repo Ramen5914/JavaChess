@@ -1390,28 +1390,6 @@ public class Board {
         return sb.toString();
     }
 
-    public void printAsciiArt() {
-        String line = "   +---+---+---+---+---+---+---+---+";
-        String files = "     a   b   c   d   e   f   g   h";
-
-
-        System.out.println(files);
-        System.out.println(line);
-        for (int y = 0; y < 8; y++) {
-            System.out.printf(" %d ", 8 - y);
-
-            for (int x = 0; x < 8; x++) {
-                int index = 64 - ((y+1) * 8) + x;
-
-                System.out.printf("| %c ", pieces.get(index).getPieceChar());
-            }
-
-            System.out.printf("| %d%n", 8 - y);
-            System.out.println(line);
-        }
-        System.out.println(files);
-    }
-
     public String bitboardString(Piece.Color color, Piece.PieceType piece) {
         StringBuilder sb = new StringBuilder();
 
