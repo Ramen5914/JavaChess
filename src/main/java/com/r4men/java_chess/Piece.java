@@ -73,7 +73,7 @@ public class Piece {
 
     @Override
     public String toString() {
-        return String.format("%s %s", color.toString(), pieceType);
+        return String.valueOf(this.pieceChar);
     }
 
     public PieceType getPieceType() {
