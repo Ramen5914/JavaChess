@@ -304,6 +304,109 @@ public class Board {
         }
     }
 
+    public void undoMove(Move move) {
+        int from = move.getFrom();
+        int to = move.getTo();
+
+        // Decrement ply and restore captured piece from history
+        ply--;
+        Piece capturedPiece = capturedPieceHistory[ply];
+
+        // The side that made the move is the opposite of the current playerToMove
+        Piece.Color mover = playerToMove.opposite();
+
+        // Handle castling
+        if (move.isKingCastle()) {
+            // Castling moves are encoded with 'to' == rook's original square; undo by moving
+            // king and rook back to their original squares based on the mover
+            if (mover.isWhite()) {
+                // King is at g1 (6), move back to e1 (4)
+                emptySquare(6);
+                setSquare(4, Piece.WHITE_KING);
+                // Rook is at f1 (5), move back to h1 (7)
+                emptySquare(5);
+                setSquare(7, Piece.WHITE_ROOK);
+            } else {
+                // King is at g8 (62), move back to e8 (60)
+                emptySquare(62);
+                setSquare(60, Piece.BLACK_KING);
+                // Rook is at f8 (61), move back to h8 (63)
+                emptySquare(61);
+                setSquare(63, Piece.BLACK_ROOK);
+            }
+
+        } else if (move.isQueenCastle()) {
+            // Undo queenside castling
+            if (mover.isWhite()) {
+                // King is at c1 (2), move back to e1 (4)
+                emptySquare(2);
+                setSquare(4, Piece.WHITE_KING);
+                // Rook is at d1 (3), move back to a1 (0)
+                emptySquare(3);
+                setSquare(0, Piece.WHITE_ROOK);
+            } else {
+                // King is at c8 (58), move back to e8 (60)
+                emptySquare(58);
+                setSquare(60, Piece.BLACK_KING);
+                // Rook is at d8 (59), move back to a8 (56)
+                emptySquare(59);
+                setSquare(56, Piece.BLACK_ROOK);
+            }
+
+        } else if (move.isPromotion()) {
+            // Get the moved piece from destination before overwriting
+            Piece movedPiece = board10x12.get(to);
+            // Remove promoted piece from destination
+            emptySquare(to);
+
+            // Restore the pawn to the source square
+            setSquare(from, mover == Piece.Color.WHITE ? Piece.WHITE_PAWN : Piece.BLACK_PAWN);
+
+            // Restore captured piece if any
+            if (!capturedPiece.isEmpty()) {
+                setSquare(to, capturedPiece);
+            }
+
+        } else if (move.isCapture()) {
+            // Get the moved piece from destination before overwriting
+            Piece movedPiece = board10x12.get(to);
+            // Regular capture (non-promotion, non-castling)
+            if (move.isEnPassantCapture()) {
+                // En passant: captured pawn is not on the destination square
+                emptySquare(to);
+                setSquare(from, movedPiece);
+                // Restore the captured pawn to its actual square
+                int capSquare = mover.isWhite() ? to - 8 : to + 8;
+                setSquare(capSquare, capturedPiece);
+            } else {
+                // Regular capture
+                emptySquare(to);
+                // Move the captured piece back to 'to'
+                setSquare(to, capturedPiece);
+                // Restore moving piece back to 'from'
+                setSquare(from, movedPiece);
+            }
+
+        } else {
+            // Get the moved piece from destination before overwriting
+            Piece movedPiece = board10x12.get(to);
+            // Quiet move or double pawn push
+            emptySquare(to);
+            setSquare(from, movedPiece);
+        }
+
+        // Restore board state from history
+        enPassantSquare = enPassantHistory[ply];
+        castlingRights = castlingRightsHistory[ply];
+        halfmoveClock = halfmoveClockHistory[ply];
+
+        // Flip player to move back
+        playerToMove = playerToMove.opposite();
+        if (playerToMove.isBlack()) {
+            fullmoveNumber--;
+        }
+    }
+
     private void setSquare(int square10x12, Piece piece) {
         if (square10x12 % 10 == 0 || square10x12 % 10 == 9 || square10x12 < 21 || square10x12 > 98) {
             throw new  IllegalArgumentException("Attempting to write to off-board squares.");
@@ -823,109 +926,6 @@ public class Board {
             return !isSquareUnderAttack(60, playerToMove) &&
                    !isSquareUnderAttack(59, playerToMove) &&
                    !isSquareUnderAttack(58, playerToMove);
-        }
-    }
-
-    public void undoMove(Move move) {
-        int from = move.getFrom();
-        int to = move.getTo();
-
-        // Decrement ply and restore captured piece from history
-        ply--;
-        Piece capturedPiece = capturedPieceHistory[ply];
-
-        // The side that made the move is the opposite of the current playerToMove
-        Piece.Color mover = playerToMove.opposite();
-
-        // Handle castling
-        if (move.isKingCastle()) {
-            // Castling moves are encoded with 'to' == rook's original square; undo by moving
-            // king and rook back to their original squares based on the mover
-            if (mover.isWhite()) {
-                // King is at g1 (6), move back to e1 (4)
-                emptySquare(6);
-                setSquare(4, Piece.WHITE_KING);
-                // Rook is at f1 (5), move back to h1 (7)
-                emptySquare(5);
-                setSquare(7, Piece.WHITE_ROOK);
-            } else {
-                // King is at g8 (62), move back to e8 (60)
-                emptySquare(62);
-                setSquare(60, Piece.BLACK_KING);
-                // Rook is at f8 (61), move back to h8 (63)
-                emptySquare(61);
-                setSquare(63, Piece.BLACK_ROOK);
-            }
-
-        } else if (move.isQueenCastle()) {
-            // Undo queenside castling
-            if (mover.isWhite()) {
-                // King is at c1 (2), move back to e1 (4)
-                emptySquare(2);
-                setSquare(4, Piece.WHITE_KING);
-                // Rook is at d1 (3), move back to a1 (0)
-                emptySquare(3);
-                setSquare(0, Piece.WHITE_ROOK);
-            } else {
-                // King is at c8 (58), move back to e8 (60)
-                emptySquare(58);
-                setSquare(60, Piece.BLACK_KING);
-                // Rook is at d8 (59), move back to a8 (56)
-                emptySquare(59);
-                setSquare(56, Piece.BLACK_ROOK);
-            }
-
-        } else if (move.isPromotion()) {
-            // Get the moved piece from destination before overwriting
-            Piece movedPiece = board10x12.get(to);
-            // Remove promoted piece from destination
-            emptySquare(to);
-
-            // Restore the pawn to the source square
-            setSquare(from, mover == Piece.Color.WHITE ? Piece.WHITE_PAWN : Piece.BLACK_PAWN);
-
-            // Restore captured piece if any
-            if (!capturedPiece.isEmpty()) {
-                setSquare(to, capturedPiece);
-            }
-
-        } else if (move.isCapture()) {
-            // Get the moved piece from destination before overwriting
-            Piece movedPiece = board10x12.get(to);
-            // Regular capture (non-promotion, non-castling)
-            if (move.isEnPassantCapture()) {
-                // En passant: captured pawn is not on the destination square
-                emptySquare(to);
-                setSquare(from, movedPiece);
-                // Restore the captured pawn to its actual square
-                int capSquare = mover.isWhite() ? to - 8 : to + 8;
-                setSquare(capSquare, capturedPiece);
-            } else {
-                // Regular capture
-                emptySquare(to);
-                // Move the captured piece back to 'to'
-                setSquare(to, capturedPiece);
-                // Restore moving piece back to 'from'
-                setSquare(from, movedPiece);
-            }
-
-        } else {
-            // Get the moved piece from destination before overwriting
-            Piece movedPiece = board10x12.get(to);
-            // Quiet move or double pawn push
-            emptySquare(to);
-            setSquare(from, movedPiece);
-        }
-
-        // Restore board state from history
-        enPassantSquare = enPassantHistory[ply];
-        castlingRights = castlingRightsHistory[ply];
-        halfmoveClock = halfmoveClockHistory[ply];
-
-        // Flip player to move back
-        playerToMove = playerToMove.opposite();
-        if (playerToMove.isBlack()) {
-            fullmoveNumber--;
         }
     }
 
