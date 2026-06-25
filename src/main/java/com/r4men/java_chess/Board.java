@@ -74,52 +74,40 @@ public class Board {
         boolean isValid = fen.matches("^\\s*((?:[rnbqkpRNBQKP1-8]{1,8}/){7}[rnbqkpRNBQKP1-8]{1,8})\\s[wWbB]\\s(-|[KQkq]{1,4})\\s(-|[a-h][36])\\s(\\d+)\\s(\\d+)\\s*");
 
         if (isValid) {
-            String[] parts = fen.split(" ");
-            String[] pieceRows = parts[0].split("/");
-            String playerToMove = parts[1];
-            String castlingRights = parts[2];
-            String enPassantSquare = parts[3];
-            halfmoveClock = Integer.parseInt(parts[4]);
-            fullmoveNumber = Integer.parseInt(parts[5]);
+            String[] fenParts = fen.split(" ");
+            String[] fenPositionRows = fenParts[0].split("/");
+            String playerToMove = fenParts[1];
+            String castlingRights = fenParts[2];
+            String enPassantSquare = fenParts[3];
+            halfmoveClock = Integer.parseInt(fenParts[4]);
+            fullmoveNumber = Integer.parseInt(fenParts[5]);
 
-            for (int y = 0; y < 8; y++) {
-                int file = 0;
-
-                for (int i = 0; i < pieceRows[y].length(); i++) {
-                    char c = pieceRows[y].charAt(i);
-                    int index = 64 - (8 * (y + 1)) + file;
-
+            StringBuilder full = new StringBuilder();
+            for (String fenRow : fenPositionRows) {
+                StringBuilder row = new StringBuilder();
+                for (char c : fenRow.toCharArray()) {
                     if (Character.isDigit(c)) {
                         int emptySquares = Character.getNumericValue(c);
-                        for (int j = 0; j < emptySquares; j++) {
-                            setSquare(index + j, Piece.EMPTY);
-                        }
-                        file += emptySquares;
+                        row.repeat(' ', emptySquares);
                     } else {
-                        if (Character.isUpperCase(c)) {
-                            setSquare(index, switch (c) {
-                                case 'B' -> Piece.WHITE_BISHOP;
-                                case 'K' -> Piece.WHITE_KING;
-                                case 'N' -> Piece.WHITE_KNIGHT;
-                                case 'P' -> Piece.WHITE_PAWN;
-                                case 'Q' -> Piece.WHITE_QUEEN;
-                                case 'R' -> Piece.WHITE_ROOK;
-                                default -> throw new IllegalArgumentException("Invalid piece character: " + c);
-                            });
-                        } else {
-                            setSquare(index, switch (c) {
-                                case 'b' -> Piece.BLACK_BISHOP;
-                                case 'k' -> Piece.BLACK_KING;
-                                case 'n' -> Piece.BLACK_KNIGHT;
-                                case 'p' -> Piece.BLACK_PAWN;
-                                case 'q' -> Piece.BLACK_QUEEN;
-                                case 'r' -> Piece.BLACK_ROOK;
-                                default -> throw new IllegalArgumentException("Invalid piece character: " + c);
-                            });
-                        }
-
-                        file++;
+                        row.append(c);
                     }
+                }
+                if (row.length() != 8) {
+                    throw new IllegalArgumentException("Invalid fen string: " + fenRow);
+                }
+
+                full.append(row);
+            }
+
+            int i = 0;
+            for (int y = 7; y >= 0; y--) {
+                for (int x = 0; x < 8; x++) {
+                    char c = full.charAt(i);
+
+                    setSquare(21 + (10 * y) + x, Piece.fromChar(c));
+
+                    i++;
                 }
             }
 
@@ -157,7 +145,7 @@ public class Board {
         int from = move.getFrom();
         int to = move.getTo();
 
-        Piece piece = pieces.get(from);
+        Piece piece = board10x12.get(from);
 
         // Save the current board state to history indexed by ply
         enPassantHistory[ply] = enPassantSquare;
@@ -165,9 +153,9 @@ public class Board {
         halfmoveClockHistory[ply] = halfmoveClock;
         // For en passant captures the captured pawn is not on the destination square
         if (move.isEnPassantCapture()) {
-            capturedPieceHistory[ply] = pieces.get(to + (playerToMove.isWhite() ? -8 : 8));
+            capturedPieceHistory[ply] = board10x12.get(to + (playerToMove.isWhite() ? -8 : 8));
         } else {
-            capturedPieceHistory[ply] = pieces.get(to);
+            capturedPieceHistory[ply] = board10x12.get(to);
         }
 
         if (isMoveValid(move)) {
@@ -317,12 +305,12 @@ public class Board {
     }
 
     private void setSquare(int square, Piece piece) {
-        Piece previousPiece = pieces.get(square);
+        Piece previousPiece = board10x12.get(square);
         long bit = 1L << square;
 
         if (piece.isEmpty()) {
             if (!previousPiece.isEmpty()) {
-                pieces.set(square, Piece.EMPTY);
+                board10x12.set(square, Piece.EMPTY);
 
                 int color = previousPiece.getColor().ordinal();
 
@@ -331,7 +319,7 @@ public class Board {
                 allOcc &= ~bit;
             }
         } else {
-            pieces.set(square, piece);
+            board10x12.set(square, piece);
 
             bitBoards[piece.getColor().ordinal()][piece.getPieceType().ordinal()] |= bit;
             bitBoards[piece.getColor().ordinal()][Piece.PieceType.OCC.ordinal()] |= bit;
@@ -354,7 +342,7 @@ public class Board {
     private void removeEnPassantPawn(Move move) {
         int to = move.getTo();
 
-        if (pieces.get(to).isWhite()) {
+        if (board10x12.get(to).isWhite()) {
             emptySquare(to - 8);
         } else {
             emptySquare(to + 8);
@@ -364,7 +352,7 @@ public class Board {
     private void markEnPassantSquare(Move move) {
         int to = move.getTo();
 
-        if (pieces.get(to).isWhite()) {
+        if (board10x12.get(to).isWhite()) {
             enPassantSquare = to - 8;
         } else {
             enPassantSquare = to + 8;
@@ -376,11 +364,11 @@ public class Board {
         int from = move.getFrom();
         int to = move.getTo();
 
-        Piece piece = pieces.get(from);
+        Piece piece = board10x12.get(from);
         // For en passant captures the captured pawn is not on the destination square
         Piece capturedPiece = move.isEnPassantCapture()
-                ? pieces.get(to + (piece.isWhite() ? -8 : 8))
-                : pieces.get(to);
+                ? board10x12.get(to + (piece.isWhite() ? -8 : 8))
+                : board10x12.get(to);
 
         // Apply the move temporarily
         emptySquare(from);
@@ -470,7 +458,7 @@ public class Board {
         // Find the king
         int kingSquare = -1;
         for (int i = 0; i < 64; i++) {
-            Piece p = pieces.get(i);
+            Piece p = board10x12.get(i);
             if (p.isKing() && p.getColor() == color) {
                 kingSquare = i;
                 break;
@@ -489,7 +477,7 @@ public class Board {
     private boolean isSquareAttackedBy(int square, Piece.Color attackingColor) {
         // Check if any piece of the attacking color can attack this square
         for (int i = 0; i < 64; i++) {
-            Piece attacker = pieces.get(i);
+            Piece attacker = board10x12.get(i);
 
             if (attacker.isEmpty() || attacker.getColor() != attackingColor) {
                 continue;
@@ -564,8 +552,8 @@ public class Board {
             return false;
         }
 
-        Piece piece = pieces.get(from);
-        Piece targetPiece = pieces.get(to);
+        Piece piece = board10x12.get(from);
+        Piece targetPiece = board10x12.get(to);
 
         // Source square must have a piece belonging to the current player
         if (piece.isEmpty() || piece.getColor() != playerToMove) {
@@ -630,8 +618,8 @@ public class Board {
     }
 
     private boolean isValidPawnMove(Move move, int from, int to, int rankDiff, int fileDiff) {
-        Piece piece = pieces.get(from);
-        Piece targetPiece = pieces.get(to);
+        Piece piece = board10x12.get(from);
+        Piece targetPiece = board10x12.get(to);
         int toRank = to / 8;
         int direction = piece.isWhite() ? 1 : -1;
 
@@ -643,7 +631,7 @@ public class Board {
             }
             // Path must be clear
             int midSquare = from + 8 * direction;
-            return pieces.get(midSquare).isEmpty() && targetPiece.isEmpty();
+            return board10x12.get(midSquare).isEmpty() && targetPiece.isEmpty();
         }
 
         if (move.isEnPassantCapture()) {
@@ -750,7 +738,7 @@ public class Board {
 
         while (currentRank != toRank || currentFile != toFile) {
             int square = currentRank * 8 + currentFile;
-            if (!pieces.get(square).isEmpty()) {
+            if (!board10x12.get(square).isEmpty()) {
                 return false;
             }
             currentRank += rankDiff;
@@ -766,8 +754,8 @@ public class Board {
                 return false; // No kingside castling rights
             }
             // Squares e1, f1, g1 must be unoccupied
-            if (!(pieces.get(4).isKing() && pieces.get(5).isEmpty() && pieces.get(6).isEmpty() &&
-                   pieces.get(7).isRook())) {
+            if (!(board10x12.get(4).isKing() && board10x12.get(5).isEmpty() && board10x12.get(6).isEmpty() &&
+                   board10x12.get(7).isRook())) {
                 return false;
             }
             // King must not be in check, and cannot move through check
@@ -780,8 +768,8 @@ public class Board {
                 return false; // No kingside castling rights
             }
             // Squares e8, f8, g8 must be unoccupied
-            if (!(pieces.get(60).isKing() && pieces.get(61).isEmpty() && pieces.get(62).isEmpty() &&
-                   pieces.get(63).isRook())) {
+            if (!(board10x12.get(60).isKing() && board10x12.get(61).isEmpty() && board10x12.get(62).isEmpty() &&
+                   board10x12.get(63).isRook())) {
                 return false;
             }
             // King must not be in check, and cannot move through check
@@ -798,8 +786,8 @@ public class Board {
                 return false; // No queenside castling rights
             }
             // Squares a1, b1, c1, d1, e1 must be unoccupied
-            if (!(pieces.get(0).isRook() && pieces.get(1).isEmpty() && pieces.get(2).isEmpty() &&
-                   pieces.get(3).isEmpty() && pieces.get(4).isKing())) {
+            if (!(board10x12.get(0).isRook() && board10x12.get(1).isEmpty() && board10x12.get(2).isEmpty() &&
+                   board10x12.get(3).isEmpty() && board10x12.get(4).isKing())) {
                 return false;
             }
             // King must not be in check, and cannot move through check
@@ -812,8 +800,8 @@ public class Board {
                 return false; // No queenside castling rights
             }
             // Squares a8, b8, c8, d8, e8 must be unoccupied
-            if (!(pieces.get(56).isRook() && pieces.get(57).isEmpty() && pieces.get(58).isEmpty() &&
-                   pieces.get(59).isEmpty() && pieces.get(60).isKing())) {
+            if (!(board10x12.get(56).isRook() && board10x12.get(57).isEmpty() && board10x12.get(58).isEmpty() &&
+                   board10x12.get(59).isEmpty() && board10x12.get(60).isKing())) {
                 return false;
             }
             // King must not be in check, and cannot move through check
@@ -875,7 +863,7 @@ public class Board {
 
         } else if (move.isPromotion()) {
             // Get the moved piece from destination before overwriting
-            Piece movedPiece = pieces.get(to);
+            Piece movedPiece = board10x12.get(to);
             // Remove promoted piece from destination
             emptySquare(to);
 
@@ -889,7 +877,7 @@ public class Board {
 
         } else if (move.isCapture()) {
             // Get the moved piece from destination before overwriting
-            Piece movedPiece = pieces.get(to);
+            Piece movedPiece = board10x12.get(to);
             // Regular capture (non-promotion, non-castling)
             if (move.isEnPassantCapture()) {
                 // En passant: captured pawn is not on the destination square
@@ -909,7 +897,7 @@ public class Board {
 
         } else {
             // Get the moved piece from destination before overwriting
-            Piece movedPiece = pieces.get(to);
+            Piece movedPiece = board10x12.get(to);
             // Quiet move or double pawn push
             emptySquare(to);
             setSquare(from, movedPiece);
@@ -939,7 +927,7 @@ public class Board {
 
         // Iterate through all squares
         for (int from = 0; from < 64; from++) {
-            Piece piece = pieces.get(from);
+            Piece piece = board10x12.get(from);
 
             // Skip empty squares and opponent pieces
             if (piece.isEmpty() || piece.getColor() != playerToMove) {
@@ -980,7 +968,7 @@ public class Board {
     }
 
     private int generatePawnMoves(int from, Move[] moveList, int moveCount) {
-        Piece piece = pieces.get(from);
+        Piece piece = board10x12.get(from);
         int toRank = from / 8;
         int toFile = from % 8;
         int direction = piece.isWhite() ? 1 : -1;
@@ -988,7 +976,7 @@ public class Board {
 
         // Forward move
         int forwardSquare = from + 8 * direction;
-        if (forwardSquare >= 0 && forwardSquare < 64 && pieces.get(forwardSquare).isEmpty()) {
+        if (forwardSquare >= 0 && forwardSquare < 64 && board10x12.get(forwardSquare).isEmpty()) {
             if (toRank + direction == promotionRank) {
                 // Promotion moves
                 for (int promFlag : new int[]{
@@ -1014,7 +1002,7 @@ public class Board {
             int startRank = piece.isWhite() ? 1 : 6;
             if (toRank == startRank) {
                 int doubleSquare = from + 16 * direction;
-                if (pieces.get(doubleSquare).isEmpty()) {
+                if (board10x12.get(doubleSquare).isEmpty()) {
                     Move move = new Move(from, doubleSquare, Move.Flags.DOUBLE_PAWN_PUSH_FLAG);
                     if (isMoveValid(move)) {
                         moveList[moveCount++].copyFrom(move);
@@ -1030,7 +1018,7 @@ public class Board {
                 int captureFile = captureSquare % 8;
                 int currentFile = from % 8;
                 if (Math.abs(captureFile - currentFile) == 1) {
-                    Piece target = pieces.get(captureSquare);
+                    Piece target = board10x12.get(captureSquare);
 
                     if (toRank + direction == promotionRank) {
                         // Promotion captures
@@ -1078,7 +1066,7 @@ public class Board {
                 int toFile = to % 8;
                 // Check boundary wrapping
                 if (Math.abs(toFile - fromFile) <= 2) {
-                    Piece target = pieces.get(to);
+                    Piece target = board10x12.get(to);
                     if (target.isEmpty()) {
                         Move move = new Move(from, to, Move.Flags.QUIET_MOVE_FLAG);
                         if (isMoveValid(move)) {
@@ -1120,7 +1108,7 @@ public class Board {
 
             while (rank >= 0 && rank < 8 && file >= 0 && file < 8) {
                 int to = rank * 8 + file;
-                Piece target = pieces.get(to);
+                Piece target = board10x12.get(to);
 
                 if (target.isEmpty()) {
                     Move move = new Move(from, to, Move.Flags.QUIET_MOVE_FLAG);
@@ -1160,7 +1148,7 @@ public class Board {
                 int toFile = to % 8;
                 // Check boundary wrapping
                 if (Math.abs(toFile - fromFile) <= 1) {
-                    Piece target = pieces.get(to);
+                    Piece target = board10x12.get(to);
                     if (target.isEmpty()) {
                         Move move = new Move(from, to, Move.Flags.QUIET_MOVE_FLAG);
                         if (isMoveValid(move)) {
@@ -1279,7 +1267,7 @@ public class Board {
             for (int x = 0; x < 8; x++) {
                 int index = 64 - (8 * (y + 1)) + x;
 
-                Piece piece = pieces.get(index);
+                Piece piece = board10x12.get(index);
 
                 if (piece.isEmpty()) {
                     consecutiveSpaces++;
