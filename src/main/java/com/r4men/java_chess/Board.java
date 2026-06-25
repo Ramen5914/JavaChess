@@ -304,26 +304,33 @@ public class Board {
         }
     }
 
-    private void setSquare(int square, Piece piece) {
-        Piece previousPiece = board10x12.get(square);
-        long bit = 1L << square;
+    private void setSquare(int square10x12, Piece piece) {
+        if (square10x12 % 10 == 0 || square10x12 % 10 == 9 || square10x12 < 21 || square10x12 > 98) {
+            throw new  IllegalArgumentException("Attempting to write to off-board squares.");
+        }
+
+        Piece previousPiece = board10x12.get(square10x12);
+
+        int square8x8 = get8x8from10x12(square10x12);
+
+        long bit8x8 = 1L << square8x8;
 
         if (piece.isEmpty()) {
             if (!previousPiece.isEmpty()) {
-                board10x12.set(square, Piece.EMPTY);
+                board10x12.set(square10x12, Piece.EMPTY);
 
                 int color = previousPiece.getColor().ordinal();
 
-                bitBoards[color][previousPiece.getPieceType().ordinal()] &= ~bit;
-                bitBoards[color][Piece.PieceType.OCC.ordinal()] &= ~bit;
-                allOcc &= ~bit;
+                bitBoards[color][previousPiece.getPieceType().ordinal()] &= ~bit8x8;
+                bitBoards[color][Piece.PieceType.OCC.ordinal()] &= ~bit8x8;
+                allOcc &= ~bit8x8;
             }
         } else {
-            board10x12.set(square, piece);
+            board10x12.set(square10x12, piece);
 
-            bitBoards[piece.getColor().ordinal()][piece.getPieceType().ordinal()] |= bit;
-            bitBoards[piece.getColor().ordinal()][Piece.PieceType.OCC.ordinal()] |= bit;
-            allOcc |= bit;
+            bitBoards[piece.getColor().ordinal()][piece.getPieceType().ordinal()] |= bit8x8;
+            bitBoards[piece.getColor().ordinal()][Piece.PieceType.OCC.ordinal()] |= bit8x8;
+            allOcc |= bit8x8;
         }
     }
 
