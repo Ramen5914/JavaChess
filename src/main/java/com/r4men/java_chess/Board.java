@@ -334,6 +334,13 @@ public class Board {
         }
     }
 
+    private int get8x8from10x12(int square) {
+        int rank = (square - 21) / 10;
+        int file = (square - 21) % 10;
+
+        return rank * 8 + file;
+    }
+
     private void emptySquare(int square) {
         setSquare(square, Piece.EMPTY);
     }
