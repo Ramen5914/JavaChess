@@ -38,9 +38,15 @@ public class Board {
     private int ply;
 
     public Board() {
-        pieces = new ArrayList<>(64);
-        for (int i = 0; i < 64; i++) {
-            pieces.add(Piece.EMPTY);
+        board10x12 = new ArrayList<>(120);
+        for (int y = 0; y < 12; y++) {
+            for (int x = 0; x < 10; x++) {
+                if (x == 0 || x == 9 || y < 2 || y > 9) {
+                    board10x12.add(Piece.OFF_BOARD);
+                } else {
+                    board10x12.add(Piece.EMPTY);
+                }
+            }
         }
 
         bitBoards = new long[2][7];
