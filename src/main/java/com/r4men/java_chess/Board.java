@@ -1306,7 +1306,7 @@ public class Board {
         return sb.toString();
     }
 
-    public String toFEN() {
+    public String toFen() {
         StringBuilder sb = new StringBuilder();
 
         for (int y = 7; y >= 0; y--) {
