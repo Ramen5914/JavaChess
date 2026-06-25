@@ -1417,6 +1417,10 @@ public class Board {
         return sb.toString();
     }
 
+    public String bitboardString(int color, int piece) {
+        return bitboardString(Piece.Color.values()[color], Piece.PieceType.values()[piece]);
+    }
+
     public String bitboardString(Piece.Color color, Piece.PieceType piece) {
         StringBuilder sb = new StringBuilder();
 
