@@ -80,6 +80,25 @@ public class Piece {
         return pieceType;
     }
 
+    public static Piece fromChar(char c) {
+        return switch (c) {
+            case 'B' -> WHITE_BISHOP;
+            case 'K' -> WHITE_KING;
+            case 'N' -> WHITE_KNIGHT;
+            case 'P' -> WHITE_PAWN;
+            case 'R' -> WHITE_ROOK;
+            case 'Q' -> WHITE_QUEEN;
+            case 'b' -> BLACK_BISHOP;
+            case 'k' -> BLACK_KING;
+            case 'n' -> BLACK_KNIGHT;
+            case 'p' -> BLACK_PAWN;
+            case 'r' -> BLACK_ROOK;
+            case 'q' -> BLACK_QUEEN;
+            case ' ' -> EMPTY;
+            default -> throw new IllegalArgumentException("Illegal piece character " + c);
+        };
+    }
+
     public Color getColor() {
         return color;
     }
