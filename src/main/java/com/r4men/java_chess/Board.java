@@ -1260,10 +1260,23 @@ public class Board {
     public String toString() {
         StringBuilder sb = new StringBuilder();
 
-
         sb.append("FEN:\n").append(toFen()).append("\n\n");
         sb.append(get10x12BoardString()).append("\n");
-        sb.append(get8x8BoardString());
+        sb.append(get8x8BoardString()).append("\n");
+
+        for (int color = 0; color < 2; color++) {
+            for (int piece = 0; piece < 7; piece++) {
+                sb.append(bitboardString(color, piece));
+
+                if (piece != 6) {
+                    sb.append("\n\n");
+                }
+            }
+
+            if (color != 1) {
+                sb.append("\n\n");
+            }
+        }
 
         return sb.toString();
     }
