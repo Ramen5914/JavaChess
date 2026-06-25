@@ -1247,7 +1247,7 @@ public class Board {
         StringBuilder sb = new StringBuilder();
 
 
-        sb.append("FEN:\n").append(toFEN()).append("\n\n");
+        sb.append("FEN:\n").append(toFen()).append("\n\n");
         sb.append(get10x12BoardString()).append("\n");
         sb.append(get8x8BoardString());
 
