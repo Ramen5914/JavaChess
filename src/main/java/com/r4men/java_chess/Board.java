@@ -31,10 +31,10 @@ public class Board {
 
     // Ply-indexed state arrays for efficient undo (max 1024 plies)
     private static final int MAX_PLIES = 4096*2*2*2;
-    private int[] enPassantHistory;
-    private int[] castlingRightsHistory;
-    private int[] halfmoveClockHistory;
-    private Piece[] capturedPieceHistory;
+    private final int[] enPassantHistory;
+    private final int[] castlingRightsHistory;
+    private final int[] halfmoveClockHistory;
+    private final Piece[] capturedPieceHistory;
     private int ply;
 
     public Board() {
