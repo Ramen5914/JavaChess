@@ -1424,21 +1424,19 @@ public class Board {
     public String bitboardString(Piece.Color color, Piece.PieceType piece) {
         StringBuilder sb = new StringBuilder();
 
-        sb.append(String.format("%s %s:\n", color.toString().toLowerCase(), piece.toString().toLowerCase()));
+        sb.append(String.format("%s %s bitboard:\n", color.toString().toLowerCase(), piece.toString().toLowerCase()));
 
-        for (int y = 0; y < 8; y++) {
-            for (int x = 0; x < 8; x++) {
-                long bit = 1L << (56 - (8 * y) + x);
+        long bb = bitBoards[color.ordinal()][piece.ordinal()];
+        for (int y = 7; y >= 0; y--) {
+            long select =  0b11111111L << (y * 8);
+            long row = (bb & select) >>> (y * 8);
 
-                if ((bitBoards[color.ordinal()][piece.ordinal()] & bit) != 0) {
-                    sb.append('1');
-                } else {
-                    sb.append('0');
-                }
-            }
+            String corrected = new StringBuilder(String.format("%8s", Long.toBinaryString(row)).replace(' ', '0')).reverse().toString();
 
-            if (y != 7) {
-                sb.append('\n');
+            sb.append(corrected);
+
+            if (y != 0) {
+                sb.append("\n");
             }
         }
 
