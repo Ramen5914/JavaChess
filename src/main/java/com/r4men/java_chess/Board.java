@@ -1309,10 +1309,10 @@ public class Board {
     public String toFEN() {
         StringBuilder sb = new StringBuilder();
 
-        for (int y = 0; y < 8; y++) {
+        for (int y = 7; y >= 0; y--) {
             int consecutiveSpaces = 0;
             for (int x = 0; x < 8; x++) {
-                int index = 64 - (8 * (y + 1)) + x;
+                int index = 10 * (y + 2) + (x + 1);
 
                 Piece piece = board10x12.get(index);
 
@@ -1330,7 +1330,8 @@ public class Board {
                     sb.append(piece.getPieceChar());
                 }
             }
-            if (y != 7) {
+
+            if (y != 0) {
                 sb.append('/');
             } else {
                 sb.append(' ');
