@@ -379,13 +379,9 @@ public class Board {
     }
 
     private void setSquare(int square10x12, Piece piece) {
-        if (square10x12 % 10 == 0 || square10x12 % 10 == 9 || square10x12 < 21 || square10x12 > 98) {
-            throw new  IllegalArgumentException("Attempting to write to off-board squares.");
-        }
+        int square8x8 = Util.convert10x12to8x8(square10x12);
 
         Piece previousPiece = board10x12.get(square10x12);
-
-        int square8x8 = get8x8from10x12(square10x12);
 
         long bit8x8 = 1L << square8x8;
 
@@ -406,13 +402,6 @@ public class Board {
             bitBoards[piece.getColor().ordinal()][Piece.PieceType.OCC.ordinal()] |= bit8x8;
             allOcc |= bit8x8;
         }
-    }
-
-    private int get8x8from10x12(int square) {
-        int rank = (square - 21) / 10;
-        int file = (square - 21) % 10;
-
-        return rank * 8 + file;
     }
 
     private void emptySquare(int square) {
