@@ -1,129 +1,137 @@
 package com.r4men.java_chess;
 
-public class Move {
-    public static class Flags {
-        public static final int QUIET_MOVE_FLAG = 0b0000;
-        public static final int DOUBLE_PAWN_PUSH_FLAG = 0b0001;
-        public static final int KING_CASTLE_FLAG = 0b0010;
-        public static final int QUEEN_CASTLE_FLAG = 0b0011;
-        public static final int CAPTURES_FLAG = 0b0100;
-        public static final int EN_PASSANT_CAPTURE_FLAG = 0b0101;
-        public static final int KNIGHT_PROMOTION_FLAG = 0b1000;
-        public static final int BISHOP_PROMOTION_FLAG = 0b1001;
-        public static final int ROOK_PROMOTION_FLAG = 0b1010;
-        public static final int QUEEN_PROMOTION_FLAG = 0b1011;
-        public static final int KNIGHT_PROMOTION_CAPTURE_FLAG = 0b1100;
-        public static final int BISHOP_PROMOTION_CAPTURE_FLAG = 0b1101;
-        public static final int ROOK_PROMOTION_CAPTURE_FLAG = 0b1110;
-        public static final int QUEEN_PROMOTION_CAPTURE_FLAG = 0b1111;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+public record Move(int move, int enPassant, int castlingRights, int halfmoveClock, @Nullable Piece capturedPiece) {
+    public enum Flag {
+        QUIET_MOVE_FLAG(0b0000),
+        DOUBLE_PAWN_PUSH_FLAG(0b0001),
+        KING_CASTLE_FLAG(0b0010),
+        QUEEN_CASTLE_FLAG(0b0011),
+        CAPTURES_FLAG(0b0100),
+        EN_PASSANT_CAPTURE_FLAG(0b0101),
+        KNIGHT_PROMOTION_FLAG(0b1000),
+        BISHOP_PROMOTION_FLAG(0b1001),
+        ROOK_PROMOTION_FLAG(0b1010),
+        QUEEN_PROMOTION_FLAG(0b1011),
+        KNIGHT_PROMOTION_CAPTURE_FLAG(0b1100),
+        BISHOP_PROMOTION_CAPTURE_FLAG(0b1101),
+        ROOK_PROMOTION_CAPTURE_FLAG(0b1110),
+        QUEEN_PROMOTION_CAPTURE_FLAG(0b1111);
+
+        private final int flag;
+
+        Flag(int flag) {
+            this.flag = flag;
+        }
+
+        public int toInt() {
+            return flag;
+        }
     }
 
-    protected int mMove;
+    public Move(int from, int to, Flag flag, int enPassant, int castlingRights, int halfmoveClock, Piece capturedPiece) {
+        if (from >= 64 || from < 0) {
+            throw new IllegalArgumentException("'from' square must be in the range [0, 64). Received: " + from);
+        }
 
-    public Move(int from, int to, int flags) {
-        mMove = ((flags & 0b1111) << 12) | ((from & 0b111111) << 6) | (to & 0b111111);
+        if (to >= 64 || to < 0) {
+            throw new IllegalArgumentException("'to' square must be in the range [0, 64). Received: " + to);
+        }
+
+        if (enPassant >= 64 || enPassant < 0) {
+            throw new IllegalArgumentException("'enPassant' square must be in the range [0, 64). Received: " + enPassant);
+        }
+
+        this(
+                ((flag.toInt() & 0b1111) << 12) | ((from & 0b111111) << 6) | (to & 0b111111),
+                enPassant,
+                castlingRights,
+                halfmoveClock,
+                capturedPiece
+        );
     }
 
     @Override
-    public String toString() {
+    public @NotNull String toString() {
         return String.format("%d -> %d (%d)", getFrom(), getTo(), getFlags());
-
-//        return String.format("%16s", Integer.toBinaryString(mMove)).replace(' ', '0');
-    }
-
-    public void copyFrom(Move a) {
-        mMove = a.mMove;
     }
 
     public int getFrom() {
-        return (mMove >> 6) & 0x3f;
+        return (move >> 6) & 0x3f;
     }
 
     public int getTo() {
-        return mMove & 0x3f;
+        return move & 0x3f;
     }
 
     public int getFlags() {
-        return (mMove >> 12) & 0x0f;
-    }
-
-    public void setTo(int to) {
-        mMove &= ~0x3f;
-        mMove |= to & 0x3f;
-    }
-
-    public void setFrom(int from) {
-        mMove &= ~(0x3f << 6);
-        mMove |= (from & 0x3f) << 6;
-    }
-
-    public void setFlags(int flags) {
-        mMove &= ~(0x0f << 12);
-        mMove |= (flags & 0x0f) << 12;
+        return (move >> 12) & 0x0f;
     }
 
     public boolean isQuiet() {
-        return mMove >> 12 == Flags.QUIET_MOVE_FLAG;
+        return move >> 12 == Flag.QUIET_MOVE_FLAG.toInt();
     }
 
     public boolean isDoublePawnPush() {
-        return mMove >> 12 == Flags.DOUBLE_PAWN_PUSH_FLAG;
+        return move >> 12 == Flag.DOUBLE_PAWN_PUSH_FLAG.toInt();
     }
 
     public boolean isKingCastle() {
-        return mMove >> 12 == Flags.KING_CASTLE_FLAG;
+        return move >> 12 == Flag.KING_CASTLE_FLAG.toInt();
     }
 
     public boolean isQueenCastle() {
-        return mMove >> 12 == Flags.QUEEN_CASTLE_FLAG;
+        return move >> 12 == Flag.QUEEN_CASTLE_FLAG.toInt();
     }
 
     public boolean isCapture() {
-        return ((mMove >> 12) & Flags.CAPTURES_FLAG) == Flags.CAPTURES_FLAG;
+        return ((move >> 12) & Flag.CAPTURES_FLAG.toInt()) == Flag.CAPTURES_FLAG.toInt();
     }
 
     public boolean isEnPassantCapture() {
-        return mMove >> 12 == Flags.EN_PASSANT_CAPTURE_FLAG;
+        return move >> 12 == Flag.EN_PASSANT_CAPTURE_FLAG.toInt();
     }
 
     public boolean isPromotion() {
-        return ((mMove >> 12) & 0b1000) == 0b1000;
+        return ((move >> 12) & 0b1000) == 0b1000;
     }
 
     public boolean isKnightPromotion() {
-        return ((mMove >> 12) & (Flags.KNIGHT_PROMOTION_FLAG | 0b1011)) == Flags.KNIGHT_PROMOTION_FLAG;
+        return ((move >> 12) & (Flag.KNIGHT_PROMOTION_FLAG.toInt() | 0b1011)) == Flag.KNIGHT_PROMOTION_FLAG.toInt();
     }
 
     public boolean isBishopPromotion() {
-        return ((mMove >> 12) & (Flags.BISHOP_PROMOTION_FLAG | 0b1011)) == Flags.BISHOP_PROMOTION_FLAG;
+        return ((move >> 12) & (Flag.BISHOP_PROMOTION_FLAG.toInt() | 0b1011)) == Flag.BISHOP_PROMOTION_FLAG.toInt();
     }
 
     public boolean isRookPromotion() {
-        return ((mMove >> 12) & (Flags.ROOK_PROMOTION_FLAG | 0b1011)) == Flags.ROOK_PROMOTION_FLAG;
+        return ((move >> 12) & (Flag.ROOK_PROMOTION_FLAG.toInt() | 0b1011)) == Flag.ROOK_PROMOTION_FLAG.toInt();
     }
 
     public boolean isQueenPromotion() {
-        return ((mMove >> 12) & (Flags.QUEEN_PROMOTION_FLAG | 0b1011)) == Flags.QUEEN_PROMOTION_FLAG;
+        return ((move >> 12) & (Flag.QUEEN_PROMOTION_FLAG.toInt() | 0b1011)) == Flag.QUEEN_PROMOTION_FLAG.toInt();
     }
 
     public boolean isKnightPromotionCapture() {
-        return mMove >> 12 == Flags.KNIGHT_PROMOTION_CAPTURE_FLAG;
+        return move >> 12 == Flag.KNIGHT_PROMOTION_CAPTURE_FLAG.toInt();
     }
 
     public boolean isBishopPromotionCapture() {
-        return mMove >> 12 == Flags.BISHOP_PROMOTION_CAPTURE_FLAG;
+        return move >> 12 == Flag.BISHOP_PROMOTION_CAPTURE_FLAG.toInt();
     }
 
     public boolean isRookPromotionCapture() {
-        return mMove >> 12 == Flags.ROOK_PROMOTION_CAPTURE_FLAG;
+        return move >> 12 == Flag.ROOK_PROMOTION_CAPTURE_FLAG.toInt();
     }
 
     public boolean isQueenPromotionCapture() {
-        return mMove >> 12 == Flags.QUEEN_PROMOTION_CAPTURE_FLAG;
+        return move >> 12 == Flag.QUEEN_PROMOTION_CAPTURE_FLAG.toInt();
     }
 
     public int getButterflyIndex() {
-        return mMove & 0b111111111111;
+        return move & 0xffff;
     }
 
     @Override
@@ -133,15 +141,11 @@ public class Move {
 
         Move a = (Move) obj;
 
-        return (mMove & 0b111111111111) == (a.mMove & 0b111111111111);
+        return (move & 0xffff) == (a.move & 0xffff);
     }
 
     @Override
     public int hashCode() {
-        return mMove & 0b111111111111;
-    }
-
-    public short asShort() {
-        return (short) (mMove);
+        return move & 0xffff;
     }
 }
