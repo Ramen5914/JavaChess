@@ -26,8 +26,7 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
-    implementation 'info.picocli:picocli:4.7.7'
-    annotationProcessor 'info.picocli:picocli-codegen:4.7.7'
+    compileOnly 'org.jetbrains:annotations:26.1.0'
 }
 
 test {
