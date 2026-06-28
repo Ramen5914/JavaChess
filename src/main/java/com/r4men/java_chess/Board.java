@@ -29,14 +29,6 @@ public class Board {
     int fullmoveNumber;
     int castlingRights;
 
-    // Ply-indexed state arrays for efficient undo (max 1024 plies)
-    private static final int MAX_PLIES = 4096*2*2*2;
-    private final int[] enPassantHistory;
-    private final int[] castlingRightsHistory;
-    private final int[] halfmoveClockHistory;
-    private final Piece[] capturedPieceHistory;
-    private int ply;
-
     public Board() {
         board10x12 = new ArrayList<>(120);
         for (int y = 0; y < 12; y++) {
@@ -59,13 +51,6 @@ public class Board {
 
         //                 qkQK
         castlingRights = 0b0000;
-
-        // Initialize history arrays
-        enPassantHistory = new int[MAX_PLIES];
-        castlingRightsHistory = new int[MAX_PLIES];
-        halfmoveClockHistory = new int[MAX_PLIES];
-        capturedPieceHistory = new Piece[MAX_PLIES];
-        ply = 0;
     }
 
     public Board(String fen) {
@@ -146,17 +131,6 @@ public class Board {
         int to = move.getTo();
 
         Piece piece = board10x12.get(from);
-
-        // Save the current board state to history indexed by ply
-        enPassantHistory[ply] = enPassantSquare;
-        castlingRightsHistory[ply] = castlingRights;
-        halfmoveClockHistory[ply] = halfmoveClock;
-        // For en passant captures the captured pawn is not on the destination square
-        if (move.isEnPassantCapture()) {
-            capturedPieceHistory[ply] = board10x12.get(to + (playerToMove.isWhite() ? -8 : 8));
-        } else {
-            capturedPieceHistory[ply] = board10x12.get(to);
-        }
 
         if (isMoveValid(move)) {
             emptySquare(from);
@@ -300,17 +274,12 @@ public class Board {
             }
 
             flipPlayerToMove();
-            ply++;
         }
     }
 
     public void undoMove(Move move) {
         int from = move.getFrom();
         int to = move.getTo();
-
-        // Decrement ply and restore captured piece from history
-        ply--;
-        Piece capturedPiece = capturedPieceHistory[ply];
 
         // The side that made the move is the opposite of the current playerToMove
         Piece.Color mover = playerToMove.opposite();
@@ -394,11 +363,6 @@ public class Board {
             emptySquare(to);
             setSquare(from, movedPiece);
         }
-
-        // Restore board state from history
-        enPassantSquare = enPassantHistory[ply];
-        castlingRights = castlingRightsHistory[ply];
-        halfmoveClock = halfmoveClockHistory[ply];
 
         // Flip player to move back
         playerToMove = playerToMove.opposite();
