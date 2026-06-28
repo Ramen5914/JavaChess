@@ -339,9 +339,9 @@ public class Board {
             setSquare(from, mover == Piece.Color.WHITE ? Piece.WHITE_PAWN : Piece.BLACK_PAWN);
 
             // Restore captured piece if any
-            if (!capturedPiece.isEmpty()) {
-                setSquare(to, capturedPiece);
-            }
+//            if (!capturedPiece.isEmpty()) {
+//                setSquare(to, capturedPiece);
+//            }
 
         } else if (move.isCapture()) {
             // Get the moved piece from destination before overwriting
@@ -353,12 +353,12 @@ public class Board {
                 setSquare(from, movedPiece);
                 // Restore the captured pawn to its actual square
                 int capSquare = mover.isWhite() ? to - 8 : to + 8;
-                setSquare(capSquare, capturedPiece);
+//                setSquare(capSquare, capturedPiece);
             } else {
                 // Regular capture
                 emptySquare(to);
                 // Move the captured piece back to 'to'
-                setSquare(to, capturedPiece);
+//                setSquare(to, capturedPiece);
                 // Restore moving piece back to 'from'
                 setSquare(from, movedPiece);
             }
@@ -961,14 +961,14 @@ public class Board {
                 }) {
                     Move move = new Move(from, forwardSquare, promFlag, enPassantSquare, castlingRights, halfmoveClock, null);
                     if (isMoveValid(move)) {
-                        moveList[moveCount++].copyFrom(move);
+//                        moveList[moveCount++].copyFrom(move);
                     }
                 }
             } else {
                 // Regular forward move
                 Move move = new Move(from, forwardSquare, Move.Flag.QUIET_MOVE_FLAG, enPassantSquare, castlingRights, halfmoveClock, null);
                 if (isMoveValid(move)) {
-                    moveList[moveCount++].copyFrom(move);
+//                    moveList[moveCount++].copyFrom(move);
                 }
             }
 
@@ -979,7 +979,7 @@ public class Board {
                 if (board10x12.get(doubleSquare).isEmpty()) {
                     Move move = new Move(from, doubleSquare, Move.Flag.DOUBLE_PAWN_PUSH_FLAG, enPassantSquare, castlingRights, halfmoveClock, null);
                     if (isMoveValid(move)) {
-                        moveList[moveCount++].copyFrom(move);
+//                        moveList[moveCount++].copyFrom(move);
                     }
                 }
             }
@@ -1004,20 +1004,20 @@ public class Board {
                         }) {
                             Move move = new Move(from, captureSquare, promFlag, enPassantSquare, castlingRights, halfmoveClock, target);
                             if (isMoveValid(move)) {
-                                moveList[moveCount++].copyFrom(move);
+//                                moveList[moveCount++].copyFrom(move);
                             }
                         }
                     } else if (!target.isEmpty() && target.getColor() != playerToMove) {
                         // Regular capture
                         Move move = new Move(from, captureSquare, Move.Flag.CAPTURES_FLAG, enPassantSquare, castlingRights, halfmoveClock, target);
                         if (isMoveValid(move)) {
-                            moveList[moveCount++].copyFrom(move);
+//                            moveList[moveCount++].copyFrom(move);
                         }
                     } else if (enPassantSquare == captureSquare) {
                         // En passant
                         Move move = new Move(from, captureSquare, Move.Flag.EN_PASSANT_CAPTURE_FLAG, enPassantSquare, castlingRights, halfmoveClock, target);
                         if (isMoveValid(move)) {
-                            moveList[moveCount++].copyFrom(move);
+//                            moveList[moveCount++].copyFrom(move);
                         }
                     }
                 }
@@ -1042,14 +1042,14 @@ public class Board {
                 if (Math.abs(toFile - fromFile) <= 2) {
                     Piece target = board10x12.get(to);
                     if (target.isEmpty()) {
-                        Move move = new Move(from, to, Move.Flags.QUIET_MOVE_FLAG);
+                        Move move = new Move(from, to, Move.Flag.QUIET_MOVE_FLAG);
                         if (isMoveValid(move)) {
-                            moveList[moveCount++].copyFrom(move);
+//                            moveList[moveCount++].copyFrom(move);
                         }
                     } else if (target.getColor() != playerToMove) {
-                        Move move = new Move(from, to, Move.Flags.CAPTURES_FLAG);
+                        Move move = new Move(from, to, Move.Flag.CAPTURES_FLAG);
                         if (isMoveValid(move)) {
-                            moveList[moveCount++].copyFrom(move);
+//                            moveList[moveCount++].copyFrom(move);
                         }
                     }
                 }
@@ -1085,14 +1085,14 @@ public class Board {
                 Piece target = board10x12.get(to);
 
                 if (target.isEmpty()) {
-                    Move move = new Move(from, to, Move.Flags.QUIET_MOVE_FLAG);
+                    Move move = new Move(from, to, Move.Flag.QUIET_MOVE_FLAG);
                     if (isMoveValid(move)) {
-                        moveList[moveCount++].copyFrom(move);
+//                        moveList[moveCount++].copyFrom(move);
                     }
                 } else if (target.getColor() != playerToMove) {
-                    Move move = new Move(from, to, Move.Flags.CAPTURES_FLAG);
+                    Move move = new Move(from, to, Move.Flag.CAPTURES_FLAG);
                     if (isMoveValid(move)) {
-                        moveList[moveCount++].copyFrom(move);
+//                        moveList[moveCount++].copyFrom(move);
                     }
                     break; // Stop sliding after capture
                 } else {
@@ -1124,14 +1124,14 @@ public class Board {
                 if (Math.abs(toFile - fromFile) <= 1) {
                     Piece target = board10x12.get(to);
                     if (target.isEmpty()) {
-                        Move move = new Move(from, to, Move.Flags.QUIET_MOVE_FLAG);
+                        Move move = new Move(from, to, Move.Flag.QUIET_MOVE_FLAG);
                         if (isMoveValid(move)) {
-                            moveList[moveCount++].copyFrom(move);
+//                            moveList[moveCount++].copyFrom(move);
                         }
                     } else if (target.getColor() != playerToMove) {
-                        Move move = new Move(from, to, Move.Flags.CAPTURES_FLAG);
+                        Move move = new Move(from, to, Move.Flag.CAPTURES_FLAG);
                         if (isMoveValid(move)) {
-                            moveList[moveCount++].copyFrom(move);
+//                            moveList[moveCount++].copyFrom(move);
                         }
                     }
                 }
@@ -1142,31 +1142,31 @@ public class Board {
         if (playerToMove.isWhite()) {
             // Kingside castling - represent move as king from e1 (4) to rook's original square h1 (7)
             if (from == 4) {
-                Move move = new Move(from, 7, Move.Flags.KING_CASTLE_FLAG);
+                Move move = new Move(from, 7, Move.Flag.KING_CASTLE_FLAG);
                 if (isMoveValid(move)) {
-                    moveList[moveCount++].copyFrom(move);
+//                    moveList[moveCount++].copyFrom(move);
                 }
             }
             // Queenside castling - represent move as king from e1 (4) to rook's original square a1 (0)
             if (from == 4) {
-                Move move = new Move(from, 0, Move.Flags.QUEEN_CASTLE_FLAG);
+                Move move = new Move(from, 0, Move.Flag.QUEEN_CASTLE_FLAG);
                 if (isMoveValid(move)) {
-                    moveList[moveCount++].copyFrom(move);
+//                    moveList[moveCount++].copyFrom(move);
                 }
             }
         } else {
             // Black kingside castling - king from e8 (60) to rook's original square h8 (63)
             if (from == 60) {
-                Move move = new Move(from, 63, Move.Flags.KING_CASTLE_FLAG);
+                Move move = new Move(from, 63, Move.Flag.KING_CASTLE_FLAG);
                 if (isMoveValid(move)) {
-                    moveList[moveCount++].copyFrom(move);
+//                    moveList[moveCount++].copyFrom(move);
                 }
             }
             // Black queenside castling - king from e8 (60) to rook's original square a8 (56)
             if (from == 60) {
-                Move move = new Move(from, 56, Move.Flags.QUEEN_CASTLE_FLAG);
+                Move move = new Move(from, 56, Move.Flag.QUEEN_CASTLE_FLAG);
                 if (isMoveValid(move)) {
-                    moveList[moveCount++].copyFrom(move);
+//                    moveList[moveCount++].copyFrom(move);
                 }
             }
         }
