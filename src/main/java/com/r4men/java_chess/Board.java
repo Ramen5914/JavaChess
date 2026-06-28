@@ -953,20 +953,20 @@ public class Board {
         if (forwardSquare >= 0 && forwardSquare < 64 && board10x12.get(forwardSquare).isEmpty()) {
             if (toRank + direction == promotionRank) {
                 // Promotion moves
-                for (int promFlag : new int[]{
-                    Move.Flags.KNIGHT_PROMOTION_FLAG,
-                    Move.Flags.BISHOP_PROMOTION_FLAG,
-                    Move.Flags.ROOK_PROMOTION_FLAG,
-                    Move.Flags.QUEEN_PROMOTION_FLAG
+                for (Move.Flag promFlag : new Move.Flag[]{
+                    Move.Flag.KNIGHT_PROMOTION_FLAG,
+                    Move.Flag.BISHOP_PROMOTION_FLAG,
+                    Move.Flag.ROOK_PROMOTION_FLAG,
+                    Move.Flag.QUEEN_PROMOTION_FLAG
                 }) {
-                    Move move = new Move(from, forwardSquare, promFlag);
+                    Move move = new Move(from, forwardSquare, promFlag, enPassantSquare, castlingRights, halfmoveClock, null);
                     if (isMoveValid(move)) {
                         moveList[moveCount++].copyFrom(move);
                     }
                 }
             } else {
                 // Regular forward move
-                Move move = new Move(from, forwardSquare, Move.Flags.QUIET_MOVE_FLAG);
+                Move move = new Move(from, forwardSquare, Move.Flag.QUIET_MOVE_FLAG, enPassantSquare, castlingRights, halfmoveClock, null);
                 if (isMoveValid(move)) {
                     moveList[moveCount++].copyFrom(move);
                 }
@@ -977,7 +977,7 @@ public class Board {
             if (toRank == startRank) {
                 int doubleSquare = from + 16 * direction;
                 if (board10x12.get(doubleSquare).isEmpty()) {
-                    Move move = new Move(from, doubleSquare, Move.Flags.DOUBLE_PAWN_PUSH_FLAG);
+                    Move move = new Move(from, doubleSquare, Move.Flag.DOUBLE_PAWN_PUSH_FLAG, enPassantSquare, castlingRights, halfmoveClock, null);
                     if (isMoveValid(move)) {
                         moveList[moveCount++].copyFrom(move);
                     }
@@ -996,26 +996,26 @@ public class Board {
 
                     if (toRank + direction == promotionRank) {
                         // Promotion captures
-                        for (int promFlag : new int[]{
-                            Move.Flags.KNIGHT_PROMOTION_CAPTURE_FLAG,
-                            Move.Flags.BISHOP_PROMOTION_CAPTURE_FLAG,
-                            Move.Flags.ROOK_PROMOTION_CAPTURE_FLAG,
-                            Move.Flags.QUEEN_PROMOTION_CAPTURE_FLAG
+                        for (Move.Flag promFlag : new Move.Flag[]{
+                            Move.Flag.KNIGHT_PROMOTION_CAPTURE_FLAG,
+                            Move.Flag.BISHOP_PROMOTION_CAPTURE_FLAG,
+                            Move.Flag.ROOK_PROMOTION_CAPTURE_FLAG,
+                            Move.Flag.QUEEN_PROMOTION_CAPTURE_FLAG
                         }) {
-                            Move move = new Move(from, captureSquare, promFlag);
+                            Move move = new Move(from, captureSquare, promFlag, enPassantSquare, castlingRights, halfmoveClock, target);
                             if (isMoveValid(move)) {
                                 moveList[moveCount++].copyFrom(move);
                             }
                         }
                     } else if (!target.isEmpty() && target.getColor() != playerToMove) {
                         // Regular capture
-                        Move move = new Move(from, captureSquare, Move.Flags.CAPTURES_FLAG);
+                        Move move = new Move(from, captureSquare, Move.Flag.CAPTURES_FLAG, enPassantSquare, castlingRights, halfmoveClock, target);
                         if (isMoveValid(move)) {
                             moveList[moveCount++].copyFrom(move);
                         }
                     } else if (enPassantSquare == captureSquare) {
                         // En passant
-                        Move move = new Move(from, captureSquare, Move.Flags.EN_PASSANT_CAPTURE_FLAG);
+                        Move move = new Move(from, captureSquare, Move.Flag.EN_PASSANT_CAPTURE_FLAG, enPassantSquare, castlingRights, halfmoveClock, target);
                         if (isMoveValid(move)) {
                             moveList[moveCount++].copyFrom(move);
                         }
