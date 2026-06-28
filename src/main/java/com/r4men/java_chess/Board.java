@@ -121,6 +121,13 @@ public class Board {
                 char rank = enPassantSquare.charAt(1);
                 this.enPassantSquare = (rank - 1) * 8 + ((int) file - 97);
             }
+
+            boolean hasWhiteKing = Util.hasOnlyOnePiece(bitBoards[Piece.Color.WHITE.ordinal()][Piece.PieceType.KING.ordinal()]);
+            boolean hasBlackKing = Util.hasOnlyOnePiece(bitBoards[Piece.Color.BLACK.ordinal()][Piece.PieceType.KING.ordinal()]);
+
+            if (!(hasWhiteKing && hasBlackKing)) {
+                throw new IllegalArgumentException("Invalid FEN string: " + fen);
+            }
         } else {
             throw new IllegalArgumentException("Invalid FEN string: " + fen);
         }
