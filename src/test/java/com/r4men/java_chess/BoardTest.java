@@ -1,5 +1,7 @@
 package com.r4men.java_chess;
 
+import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class BoardTest {
@@ -10,7 +12,7 @@ class BoardTest {
 
 
     // Initial Position
-//    @Test
+    @Test
     void initial() {
         assertEquals(1, initial.perft(0));
         assertEquals(20, initial.perft(1));
