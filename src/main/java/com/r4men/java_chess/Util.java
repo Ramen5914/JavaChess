@@ -37,8 +37,8 @@ public class Util {
             throw new  IllegalArgumentException("Invalid 10x12 square (Off-Board on 8x8): " + String.format("0x%2s", Integer.toHexString(s10x12).toUpperCase()).replace(' ', '0'));
         }
 
-        int rank = (s10x12 - 21) / 10;
-        int file = (s10x12 - 21) % 10;
+        int rank = (s10x12 - 0x15) / 10;
+        int file = (s10x12 - 0x15) % 10;
 
         return (rank * 8) + file;
     }
