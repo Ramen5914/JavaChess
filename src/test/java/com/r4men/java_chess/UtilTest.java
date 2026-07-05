@@ -29,4 +29,65 @@ public class UtilTest {
         assertEquals(0x1F, Util.convert8x8to10x12(8));
         assertEquals(0x62, Util.convert8x8to10x12(63));
     }
+
+    @Test
+    void isDiagonalFrom10x12() {
+        for (int i = 0; i < 120; i++) {
+//            switch (i) {
+//                case 0x20, 0x2B, 0x36, 0x41, 0x4C, 0x57, 0x62 -> assertTrue(Util.isDiagonalFrom10x12(0x15, i, Direction.NE_10X12), Integer.toHexString(i));
+//                default -> assertFalse(Util.isDiagonalFrom10x12(0x15, i, Direction.NE_10X12), Integer.toHexString(i));
+//            }
+//
+//            switch (i) {
+//                case 0x40, 0x35, 0x2A, 0x1F -> assertTrue(Util.isDiagonalFrom10x12(0x4B, i, Direction.SW_10X12), Integer.toHexString(i));
+//                default -> assertFalse(Util.isDiagonalFrom10x12(0x4B, i, Direction.SW_10X12), Integer.toHexString(i));
+//            }
+
+            switch (i) {
+                case 0x62 -> assertTrue(Util.isRayFrom10x12(0x57, i, Direction.D10X12.NE), Integer.toHexString(i));
+                default -> assertFalse(Util.isRayFrom10x12(0x57, i, Direction.D10X12.NE), Integer.toHexString(i));
+            }
+        }
+    }
+
+    @Test
+    void convertUciTo8x8Move() {
+        Set<Character> validFiles = Set.of('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h');
+        Set<Character> validRanks = Set.of('1', '2', '3', '4', '5', '6', '7', '8');
+        Set<Character> validPromo = Set.of('q', 'r', 'b', 'n', ' ');
+
+        for (char f1 : validFiles) {
+            for (char r1 : validRanks) {
+                for (char f2 : validFiles) {
+                    for (char r2 : validRanks) {
+                        for (char p : validPromo) {
+                            String uciMove = "" + f1 + r1 + f2 + r2 + (p == ' ' ? "" : p);
+
+                            int from = (Character.getNumericValue(r1) - 1) * 8 + (f1 - 'a');
+                            int to = (Character.getNumericValue(r2) - 1) * 8 + (f2 - 'a');
+
+                            var output = Util.convertUciTo8x8Move(uciMove);
+
+                            assertEquals(from, output.getKey().getKey(), "Failed for uciMove: " + uciMove);
+                            assertEquals(to, output.getKey().getValue(), "Failed for uciMove: " + uciMove);
+
+                            if (p == ' ') {
+                                assertNull(output.getValue(),  "Failed for uciMove: " + uciMove);
+                            } else {
+                                Piece.PieceType expected = switch (p) {
+                                    case 'q' -> Piece.PieceType.QUEEN;
+                                    case 'r' -> Piece.PieceType.ROOK;
+                                    case 'b' -> Piece.PieceType.BISHOP;
+                                    case 'n' -> Piece.PieceType.KNIGHT;
+                                    default -> throw new IllegalStateException("Unexpected value: " + p);
+                                };
+
+                                assertEquals(expected, output.getValue(),  "Failed for uciMove: " + uciMove);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
