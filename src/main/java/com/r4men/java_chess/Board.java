@@ -94,7 +94,7 @@ public class Board {
                 for (int x = 0; x < 8; x++) {
                     char c = full.charAt(i);
 
-                    setSquare(21 + (10 * y) + x, Piece.fromChar(c));
+                    setSquare10x12(21 + (10 * y) + x, Piece.fromChar(c));
 
                     i++;
                 }
