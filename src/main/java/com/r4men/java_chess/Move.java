@@ -28,6 +28,18 @@ public record Move(int move, int enPassantSquare10x12, int castlingRights, int h
         public int toInt() {
             return flag;
         }
+
+        public static Flag fromInt(int flag) {
+            if (flag >= 0 && flag <= 15) {
+                for (Flag f : Flag.values()) {
+                    if (f.flag == flag) {
+                        return f;
+                    }
+                }
+            }
+
+            throw new IllegalArgumentException("Invalid flag value: " + flag);
+        }
     }
 
     public Move(int from8x8, int to8x8, Flag flag, int enPassantSquare10x12, int castlingRights, int halfmoveClock, Piece capturedPiece) {
