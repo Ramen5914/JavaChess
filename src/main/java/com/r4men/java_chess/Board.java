@@ -1,5 +1,7 @@
 package com.r4men.java_chess;
 
+import javafx.util.Pair;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
