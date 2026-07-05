@@ -492,7 +492,7 @@ public class Board {
         }
     }
 
-    private void setSquare(int square10x12, Piece piece) {
+    private void setSquare10x12(int square10x12, Piece piece) {
         int square8x8 = Util.convert10x12to8x8(square10x12);
 
         Piece previousPiece = board10x12.get(square10x12);
@@ -518,8 +518,8 @@ public class Board {
         }
     }
 
-    private void emptySquare(int square) {
-        setSquare(square, Piece.EMPTY);
+    private void emptySquare10x12(int square) {
+        setSquare10x12(square, Piece.EMPTY);
     }
 
     private void flipPlayerToMove() {
@@ -531,22 +531,12 @@ public class Board {
     }
 
     private void removeEnPassantPawn(Move move) {
-        int to = move.getTo();
+        int to = move.getTo8x8();
 
         if (board10x12.get(to).isWhite()) {
-            emptySquare(to - 8);
+            emptySquare10x12(to - 8);
         } else {
-            emptySquare(to + 8);
-        }
-    }
-
-    private void markEnPassantSquare(Move move) {
-        int to = move.getTo();
-
-        if (board10x12.get(to).isWhite()) {
-            enPassantSquare = to - 8;
-        } else {
-            enPassantSquare = to + 8;
+            emptySquare10x12(to + 8);
         }
     }
 
