@@ -43,6 +43,40 @@ public class Util {
         return (rank * 8) + file;
     }
 
+    /**
+     * Determines whether a target square lies on a straight ray from a starting square
+     * in a 10x12 mailbox board representation.
+     *
+     * <p>The ray may be orthogonal or diagonal, depending on the supplied direction.
+     * The method steps from {@code from} toward {@code to} one square at a time until
+     * it either reaches {@code to} or leaves the board.</p>
+     *
+     * @param from the starting square index in 10x12 representation
+     * @param to the target square index in 10x12 representation
+     * @param direction the ray direction to check
+     *
+     * @return {@code true} if {@code to} lies on the specified ray from {@code from}; {@code false} otherwise
+     *
+     * @throws IllegalArgumentException if either {@code from} or {@code to} are not in the range [0, 120)
+     */
+    public static boolean isRayFrom10x12(int from, int to, Direction.D10X12 direction) {
+        if (from < 0 || from >= 120 || to < 0 || to >= 120) {
+            throw new IllegalArgumentException("From or To must be between 0 and 120");
+        }
+
+        int step = direction.toInt();
+        int square = from + step;
+
+        while (square >= 0 && square < 120 && board10x12[square]) {
+            if (square == to) {
+                return true;
+            }
+            square += step;
+        }
+
+        return false;
+    }
+
     //              INT:
     //      A  B  C  D  E  F  G  H
     // 8 | 56 57 58 59 60 61 62 63 | 8
