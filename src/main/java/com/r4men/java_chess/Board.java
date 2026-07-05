@@ -218,6 +218,10 @@ public class Board {
         }
     }
 
+    public void makeMove(@Nullable Move move) {
+        makeMove(move, false);
+    }
+
                             }
                             if (from == 63) { // h8
                                 castlingRights &= ~0b0100; // Remove k (kingside)
