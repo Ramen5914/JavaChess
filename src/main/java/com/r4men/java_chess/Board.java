@@ -548,6 +548,7 @@ public class Board {
         return toReturn;
     }
 
+    // TODO redo this function
     private boolean isKingInCheck(Piece.Color color) {
         // Find the king
         int kingSquare = -1;
