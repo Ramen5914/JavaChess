@@ -1,9 +1,8 @@
 package com.r4men.java_chess;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-public record Move(int move, int enPassant, int castlingRights, int halfmoveClock, @Nullable Piece capturedPiece) {
+public record Move(int move, int enPassantSquare10x12, int castlingRights, int halfmoveClock, @NotNull Piece capturedPiece) {
     public enum Flag {
         QUIET_MOVE_FLAG(0b0000),
         DOUBLE_PAWN_PUSH_FLAG(0b0001),
@@ -31,39 +30,48 @@ public record Move(int move, int enPassant, int castlingRights, int halfmoveCloc
         }
     }
 
-    public Move(int from, int to, Flag flag, int enPassant, int castlingRights, int halfmoveClock, Piece capturedPiece) {
-        if (from >= 64 || from < 0) {
-            throw new IllegalArgumentException("'from' square must be in the range [0, 64). Received: " + from);
+    public Move(int from8x8, int to8x8, Flag flag, int enPassantSquare10x12, int castlingRights, int halfmoveClock, Piece capturedPiece) {
+        if (from8x8 >= 64 || from8x8 < 0) {
+            throw new IllegalArgumentException("'from8x8' square must be in the range [0, 64). Received: " + from8x8);
         }
 
-        if (to >= 64 || to < 0) {
-            throw new IllegalArgumentException("'to' square must be in the range [0, 64). Received: " + to);
+        if (to8x8 >= 64 || to8x8 < 0) {
+            throw new IllegalArgumentException("'to8x8' square must be in the range [0, 64). Received: " + to8x8);
         }
 
-        if (enPassant >= 64 || enPassant < 0) {
-            throw new IllegalArgumentException("'enPassant' square must be in the range [0, 64). Received: " + enPassant);
+        if (!((enPassantSquare10x12 >= 0x29 && enPassantSquare10x12 <= 0x30) || (enPassantSquare10x12 >= 0x47 && enPassantSquare10x12 <= 0x4E) || enPassantSquare10x12 == -1)) {
+            throw new IllegalArgumentException("'enPassantSquare10x12' must be in [41,48] or [71,78], or -1. Received: " + enPassantSquare10x12);
         }
 
         this(
-                ((flag.toInt() & 0b1111) << 12) | ((from & 0b111111) << 6) | (to & 0b111111),
-                enPassant,
+                ((flag.toInt() & 0b1111) << 12) | ((from8x8 & 0b111111) << 6) | (to8x8 & 0b111111),
+                enPassantSquare10x12,
                 castlingRights,
                 halfmoveClock,
-                capturedPiece
+                capturedPiece != null ? capturedPiece : Piece.EMPTY
         );
     }
 
     @Override
     public @NotNull String toString() {
-        return String.format("%d -> %d (%d)", getFrom(), getTo(), getFlags());
+        return String.format("%d -> %d (%d)", getFrom8x8(), getTo8x8(), getFlags());
     }
 
-    public int getFrom() {
+    public int getFrom8x8() {
         return (move >> 6) & 0x3f;
     }
 
-    public int getTo() {
+    public int getTo8x8() {
         return move & 0x3f;
+    }
+
+    public int getFrom10x12() {
+        return Util.convert8x8to10x12(getFrom8x8());
+    }
+
+    public int getTo10x12() {
+        return Util.convert8x8to10x12(getTo8x8());
+
     }
 
     public int getFlags() {
@@ -76,6 +84,10 @@ public record Move(int move, int enPassant, int castlingRights, int halfmoveCloc
 
     public boolean isDoublePawnPush() {
         return move >> 12 == Flag.DOUBLE_PAWN_PUSH_FLAG.toInt();
+    }
+
+    public boolean isCastle() {
+        return ((move >> 12) & 0b1110) == 0b0010;
     }
 
     public boolean isKingCastle() {
