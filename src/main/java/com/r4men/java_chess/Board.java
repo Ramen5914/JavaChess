@@ -639,134 +639,120 @@ public class Board {
     }
 
     private boolean isMoveValid(Move move) {
-        int from = move.getFrom();
-        int to = move.getTo();
-
-        // Source and destination must be different
-        if (from == to) {
-            return false;
-        }
-
-        Piece piece = board10x12.get(from);
-        Piece targetPiece = board10x12.get(to);
-
-        // Source square must have a piece belonging to the current player
-        if (piece.isEmpty() || piece.getColor() != playerToMove) {
-            return false;
-        }
-
-        // Destination must not have own piece (unless it's a special move, but captures handle this)
-        if (!targetPiece.isEmpty() && targetPiece.getColor() == playerToMove) {
-            return false;
-        }
-
-        // Validate capture flag consistency
-        boolean isCapture = move.isCapture();
-        boolean hasTargetPiece = !targetPiece.isEmpty();
-        boolean isEnPassant = move.isEnPassantCapture();
-
-        if (isCapture != (hasTargetPiece || isEnPassant)) {
-            return false;
-        }
-
-        // Validate based on piece type
-        if (!isValidMovementForPiece(move, piece)) {
-            return false;
-        }
-
-        // Check that the move doesn't leave the king in check
-        return !wouldBeInCheckAfterMove(move);
+        return isMoveValid(move, false);
     }
 
-    private boolean isValidMovementForPiece(Move move, Piece piece) {
-        int from = move.getFrom();
-        int to = move.getTo();
-        int fromRank = from / 8;
-        int fromFile = from % 8;
-        int toRank = to / 8;
-        int toFile = to % 8;
-        int rankDiff = toRank - fromRank;
-        int fileDiff = toFile - fromFile;
+    private boolean isMoveValid(Move move, boolean ignoreSelfCheck) {
+        int from8x8 = move.getFrom8x8();
+        int to8x8 = move.getTo8x8();
 
-        switch (piece.getPieceType()) {
-            case PAWN:
-                return isValidPawnMove(move, from, to, rankDiff, fileDiff);
+        int from10x12 = move.getFrom10x12();
+        int to10x12 = move.getTo10x12();
 
-            case KNIGHT:
-                return isValidKnightMove(rankDiff, fileDiff);
+        Piece movedPiece = board10x12.get(from10x12);
+        Piece destinationPiece = board10x12.get(to10x12);
 
-            case BISHOP:
-                return isValidBishopMove(rankDiff, fileDiff) && isPathClear(from, to);
+        // From and to squares must be different
+        // Moved piece belongs to the player whose turn it is to move
+        // Destination square is not off the board
+        if (from10x12 == to10x12 || !movedPiece.matchesColor(playerToMove) || destinationPiece.isOffBoard()) {
+            return false;
+        }
 
-            case ROOK:
-                return isValidRookMove(rankDiff, fileDiff) && isPathClear(from, to);
-
-            case QUEEN:
-                return isValidQueenMove(rankDiff, fileDiff) && isPathClear(from, to);
-
-            case KING:
-                return isValidKingMove(move, rankDiff, fileDiff);
-
-            default:
-                return false;
+        if (ignoreSelfCheck) {
+            return isValidMovementForPiece(movedPiece, move);
+        } else {
+            return isValidMovementForPiece(movedPiece, move) && !wouldBeInCheckAfterMove(move);
         }
     }
 
-    private boolean isValidPawnMove(Move move, int from, int to, int rankDiff, int fileDiff) {
-        Piece piece = board10x12.get(from);
-        Piece targetPiece = board10x12.get(to);
-        int toRank = to / 8;
-        int direction = piece.isWhite() ? 1 : -1;
+    private boolean isValidMovementForPiece(Piece movedPiece, Move move) {
+        int from10x12 = move.getFrom10x12();
+        int to10x12 = move.getTo10x12();
+
+        Piece destinationPiece = board10x12.get(to10x12);
+
+        if (move.isCapture() && destinationPiece.isEmpty()) {
+            return false;
+        } else if (!movedPiece.isPawn() && move.isPromotion()) {
+            return false;
+        }
+
+//        int fromRank = from / 8;
+//        int fromFile = from % 8;
+//        int toRank = to / 8;
+//        int toFile = to % 8;
+//        int rankDiff = toRank - fromRank;
+//        int fileDiff = toFile - fromFile;
+
+        return switch (movedPiece.getPieceType()) {
+            case PAWN -> isValidPawnMove(move, movedPiece, destinationPiece, from10x12, to10x12);
+//            case KNIGHT -> isValidKnightMove(rankDiff, fileDiff);
+//            case BISHOP -> isValidBishopMove(rankDiff, fileDiff) && isPathClear(from, to);
+//            case ROOK -> isValidRookMove(rankDiff, fileDiff) && isPathClear(from, to);
+//            case QUEEN -> isValidQueenMove(rankDiff, fileDiff) && isPathClear(from, to);
+//            case KING -> isValidKingMove(move, rankDiff, fileDiff);
+            default -> false;
+        };
+    }
+
+    private boolean isValidPawnMove(Move move, Piece movedPiece, Piece destinationPiece, int from10x12, int to10x12) {
+        if (movedPiece.getColor() == destinationPiece.getColor()) {
+            return false;
+        }
+
+        Direction.D10X12 direction = playerToMove.isWhite() ? Direction.D10X12.N : Direction.D10X12.S;
+
+        int fromRank = from10x12 / 10 - 1;
 
         if (move.isDoublePawnPush()) {
-            // Double pawn push from starting position
-            int startRank = piece.isWhite() ? 1 : 6;
-            if (from / 8 != startRank || rankDiff != 2 * direction || fileDiff != 0) {
-                return false;
-            }
-            // Path must be clear
-            int midSquare = from + 8 * direction;
-            return board10x12.get(midSquare).isEmpty() && targetPiece.isEmpty();
-        }
+            int validStartRank = playerToMove.isWhite() ? 2 : 7;
 
-        if (move.isEnPassantCapture()) {
+            if (fromRank == validStartRank && to10x12 == from10x12 + direction.toInt() * 2) {
+                return isPathClear10x12(from10x12, to10x12, direction);
+            } else {
+                return false;
+            }
+        } else if (move.isEnPassantCapture()) {
             // En passant capture
-            if (rankDiff != direction || Math.abs(fileDiff) != 1) {
-                return false;
-            }
-            if (enPassantSquare != to) {
-                return false;
-            }
+//            if (rankDiff != direction || Math.abs(fileDiff) != 1) {
+//                return false;
+//            }
 //            if (enPassantSquare10x12 != to) {
+//                return false;
+//            }
             return true;
         }
 
         if (move.isPromotion()) {
+            int toRank = to10x12 / 10 - 1;
+            int promotionRank = playerToMove.isWhite() ? 8 : 1;
+
             // Pawn promotion (only on last rank)
-            int promotionRank = piece.isWhite() ? 7 : 0;
             if (toRank != promotionRank) {
                 return false;
             }
-            if (move.isCapture()) {
-                return rankDiff == direction && Math.abs(fileDiff) == 1 && !targetPiece.isEmpty();
-            } else {
-                return rankDiff == direction && fileDiff == 0 && targetPiece.isEmpty();
-            }
+//            if (move.isCapture()) {
+//                return rankDiff == direction && Math.abs(fileDiff) == 1 && !targetPiece.isEmpty();
+//            } else {
+//                return rankDiff == direction && fileDiff == 0 && targetPiece.isEmpty();
+//            }
         }
 
-        if (move.isCapture()) {
-            // Regular pawn capture (non-promotion)
-            return rankDiff == direction && Math.abs(fileDiff) == 1 && !targetPiece.isEmpty();
-        }
+//        if (move.isCapture()) {
+//            // Regular pawn capture (non-promotion)
+//            return rankDiff == direction && Math.abs(fileDiff) == 1 && !targetPiece.isEmpty();
+//        }
 
         // Regular pawn move (quiet, non-promotion)
-        if (fileDiff != 0) {
-            return false; // Pawns can only move diagonally when capturing
-        }
-        if (rankDiff != direction) {
-            return false; // Pawns move one square forward
-        }
-        return targetPiece.isEmpty();
+//        if (fileDiff != 0) {
+//            return false; // Pawns can only move diagonally when capturing
+//        }
+//        if (rankDiff != direction) {
+//            return false; // Pawns move one square forward
+//        }
+//        return targetPiece.isEmpty();
+        return true;
     }
 
     private boolean isValidKnightMove(int rankDiff, int fileDiff) {
@@ -790,8 +776,8 @@ public class Board {
     }
 
     private boolean isValidKingMove(Move move, int rankDiff, int fileDiff) {
-        int from = move.getFrom();
-        int to = move.getTo();
+        int from = move.getFrom8x8();
+        int to = move.getTo8x8();
 
         if (move.isKingCastle()) {
             // Kingside castling - 'to' is the rook's original square
@@ -820,28 +806,20 @@ public class Board {
                (rankDiff != 0 || fileDiff != 0);
     }
 
-    private boolean isPathClear(int from, int to) {
-        int fromRank = from / 8;
-        int fromFile = from % 8;
-        int toRank = to / 8;
-        int toFile = to % 8;
-
-        int rankDiff = Integer.compare(toRank, fromRank);
-        int fileDiff = Integer.compare(toFile, fromFile);
-
-        int currentRank = fromRank + rankDiff;
-        int currentFile = fromFile + fileDiff;
-
-        while (currentRank != toRank || currentFile != toFile) {
-            int square = currentRank * 8 + currentFile;
-            if (!board10x12.get(square).isEmpty()) {
-                return false;
+    private boolean isPathClear10x12(int from, int to, Direction.D10X12 direction) {
+        if (Util.isRayFrom10x12(from, to, direction)) {
+            int squareToCheck = from + direction.toInt();
+            while (squareToCheck != to) {
+                if (!board10x12.get(squareToCheck).isEmpty()) {
+                    return false;
+                }
+                squareToCheck += direction.toInt();
             }
-            currentRank += rankDiff;
-            currentFile += fileDiff;
-        }
 
-        return true;
+            return true;
+        } else {
+            throw new IllegalArgumentException("Squares " + from + " and " + to + " are not aligned in direction " + direction);
+        }
     }
 
     private boolean isKingsideCastleLegal() {
@@ -912,7 +890,7 @@ public class Board {
         // Initialize all Move objects in the array
         for (int i = 0; i < moveList.length; i++) {
             if (moveList[i] == null) {
-                moveList[i] = new Move(0, 0, 0);
+//                moveList[i] = new Move(0, 0, 0);
             }
         }
 
@@ -1061,15 +1039,15 @@ public class Board {
                 if (Math.abs(toFile - fromFile) <= 2) {
                     Piece target = board10x12.get(to);
                     if (target.isEmpty()) {
-                        Move move = new Move(from, to, Move.Flag.QUIET_MOVE_FLAG);
-                        if (isMoveValid(move)) {
+//                        Move move = new Move(from, to, Move.Flag.QUIET_MOVE_FLAG);
+//                        if (isMoveValid(move)) {
 //                            moveList[moveCount++].copyFrom(move);
-                        }
+//                        }
                     } else if (target.getColor() != playerToMove) {
-                        Move move = new Move(from, to, Move.Flag.CAPTURES_FLAG);
-                        if (isMoveValid(move)) {
+//                        Move move = new Move(from, to, Move.Flag.CAPTURES_FLAG);
+//                        if (isMoveValid(move)) {
 //                            moveList[moveCount++].copyFrom(move);
-                        }
+//                        }
                     }
                 }
             }
@@ -1104,15 +1082,15 @@ public class Board {
                 Piece target = board10x12.get(to);
 
                 if (target.isEmpty()) {
-                    Move move = new Move(from, to, Move.Flag.QUIET_MOVE_FLAG);
-                    if (isMoveValid(move)) {
+//                    Move move = new Move(from, to, Move.Flag.QUIET_MOVE_FLAG);
+//                    if (isMoveValid(move)) {
 //                        moveList[moveCount++].copyFrom(move);
-                    }
+//                    }
                 } else if (target.getColor() != playerToMove) {
-                    Move move = new Move(from, to, Move.Flag.CAPTURES_FLAG);
-                    if (isMoveValid(move)) {
+//                    Move move = new Move(from, to, Move.Flag.CAPTURES_FLAG);
+//                    if (isMoveValid(move)) {
 //                        moveList[moveCount++].copyFrom(move);
-                    }
+//                    }
                     break; // Stop sliding after capture
                 } else {
                     break; // Stop sliding at own piece
@@ -1143,15 +1121,15 @@ public class Board {
                 if (Math.abs(toFile - fromFile) <= 1) {
                     Piece target = board10x12.get(to);
                     if (target.isEmpty()) {
-                        Move move = new Move(from, to, Move.Flag.QUIET_MOVE_FLAG);
-                        if (isMoveValid(move)) {
+//                        Move move = new Move(from, to, Move.Flag.QUIET_MOVE_FLAG);
+//                        if (isMoveValid(move)) {
 //                            moveList[moveCount++].copyFrom(move);
-                        }
+//                        }
                     } else if (target.getColor() != playerToMove) {
-                        Move move = new Move(from, to, Move.Flag.CAPTURES_FLAG);
-                        if (isMoveValid(move)) {
+//                        Move move = new Move(from, to, Move.Flag.CAPTURES_FLAG);
+//                        if (isMoveValid(move)) {
 //                            moveList[moveCount++].copyFrom(move);
-                        }
+//                        }
                     }
                 }
             }
@@ -1161,32 +1139,32 @@ public class Board {
         if (playerToMove.isWhite()) {
             // Kingside castling - represent move as king from e1 (4) to rook's original square h1 (7)
             if (from == 4) {
-                Move move = new Move(from, 7, Move.Flag.KING_CASTLE_FLAG);
-                if (isMoveValid(move)) {
+//                Move move = new Move(from, 7, Move.Flag.KING_CASTLE_FLAG);
+//                if (isMoveValid(move)) {
 //                    moveList[moveCount++].copyFrom(move);
-                }
+//                }
             }
             // Queenside castling - represent move as king from e1 (4) to rook's original square a1 (0)
             if (from == 4) {
-                Move move = new Move(from, 0, Move.Flag.QUEEN_CASTLE_FLAG);
-                if (isMoveValid(move)) {
+//                Move move = new Move(from, 0, Move.Flag.QUEEN_CASTLE_FLAG);
+//                if (isMoveValid(move)) {
 //                    moveList[moveCount++].copyFrom(move);
-                }
+//                }
             }
         } else {
             // Black kingside castling - king from e8 (60) to rook's original square h8 (63)
             if (from == 60) {
-                Move move = new Move(from, 63, Move.Flag.KING_CASTLE_FLAG);
-                if (isMoveValid(move)) {
+//                Move move = new Move(from, 63, Move.Flag.KING_CASTLE_FLAG);
+//                if (isMoveValid(move)) {
 //                    moveList[moveCount++].copyFrom(move);
-                }
+//                }
             }
             // Black queenside castling - king from e8 (60) to rook's original square a8 (56)
             if (from == 60) {
-                Move move = new Move(from, 56, Move.Flag.QUEEN_CASTLE_FLAG);
-                if (isMoveValid(move)) {
+//                Move move = new Move(from, 56, Move.Flag.QUEEN_CASTLE_FLAG);
+//                if (isMoveValid(move)) {
 //                    moveList[moveCount++].copyFrom(move);
-                }
+//                }
             }
         }
 
@@ -1372,8 +1350,6 @@ public class Board {
         if (enPassantSquare10x12 == -1) {
             sb.append("- ");
         } else {
-            int file = enPassantSquare % 8;
-            int rank = enPassantSquare / 8 + 1;
             int file = enPassantSquare10x12 % 8;
             int rank = enPassantSquare10x12 / 8 + 1;
 
