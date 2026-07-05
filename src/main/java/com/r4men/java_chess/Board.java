@@ -1,5 +1,7 @@
 package com.r4men.java_chess;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +25,7 @@ public class Board {
     long[][] bitBoards;
     long allOcc;
 
-    int enPassantSquare;
+    int enPassantSquare10x12;
     Piece.Color playerToMove;
     int halfmoveClock;
     int fullmoveNumber;
@@ -44,7 +46,7 @@ public class Board {
         bitBoards = new long[2][7];
         allOcc = 0L;
 
-        enPassantSquare = -1;
+        enPassantSquare10x12 = -1;
         playerToMove = Piece.Color.WHITE;
         halfmoveClock = 0;
         fullmoveNumber = 1;
@@ -115,11 +117,9 @@ public class Board {
             }
 
             if (enPassantSquare.equals("-")) {
-                this.enPassantSquare = -1;
+                this.enPassantSquare10x12 = -1;
             } else {
-                char file = enPassantSquare.charAt(0);
-                char rank = enPassantSquare.charAt(1);
-                this.enPassantSquare = (rank - 1) * 8 + ((int) file - 97);
+                this.enPassantSquare10x12 = Util.convertSquareTo10x12(enPassantSquare);
             }
 
             boolean hasWhiteKing = Util.hasOnlyOnePiece(bitBoards[Piece.Color.WHITE.ordinal()][Piece.PieceType.KING.ordinal()]);
@@ -142,8 +142,11 @@ public class Board {
         if (isMoveValid(move)) {
             emptySquare(from);
             emptySquare(to);
+                        if (to10x12 == enPassantSquare10x12) {
 
             enPassantSquare = -1;
+            return new Move(from8x8, to8x8, flag, enPassantSquare10x12, castlingRights, halfmoveClock, capturedPiece);
+                enPassantSquare10x12 = -1;
 
             if (move.isQuiet() || move.isDoublePawnPush()) {
                 setSquare(to, piece);
@@ -281,6 +284,12 @@ public class Board {
             }
 
             flipPlayerToMove();
+                    enPassantIsPossible = isMoveValid(new Move(Util.convert10x12to8x8(leftIndex), Util.convert10x12to8x8(pEnPassantSquare), Move.Flag.EN_PASSANT_CAPTURE_FLAG, enPassantSquare10x12, castlingRights, halfmoveClock, board10x12.get(pEnPassantSquare)));
+                    enPassantIsPossible = isMoveValid(new Move(Util.convert10x12to8x8(rightIndex), Util.convert10x12to8x8(pEnPassantSquare), Move.Flag.EN_PASSANT_CAPTURE_FLAG, enPassantSquare10x12, castlingRights, halfmoveClock, board10x12.get(pEnPassantSquare)));
+                    enPassantIsPossible = isMoveValid(new Move(Util.convert10x12to8x8(leftIndex), Util.convert10x12to8x8(pEnPassantSquare), Move.Flag.EN_PASSANT_CAPTURE_FLAG, enPassantSquare10x12, castlingRights, halfmoveClock, board10x12.get(pEnPassantSquare)));
+                    enPassantIsPossible = isMoveValid(new Move(Util.convert10x12to8x8(rightIndex), Util.convert10x12to8x8(pEnPassantSquare), Move.Flag.EN_PASSANT_CAPTURE_FLAG, enPassantSquare10x12, castlingRights, halfmoveClock, board10x12.get(pEnPassantSquare)));
+            enPassantSquare10x12 = pEnPassantSquare;
+            enPassantSquare10x12 = -1;
         }
     }
 
@@ -373,6 +382,7 @@ public class Board {
 
         // Flip player to move back
         playerToMove = playerToMove.opposite();
+        enPassantSquare10x12 = move.enPassantSquare10x12();;
         if (playerToMove.isBlack()) {
             fullmoveNumber--;
         }
@@ -719,6 +729,7 @@ public class Board {
             if (enPassantSquare != to) {
                 return false;
             }
+//            if (enPassantSquare10x12 != to) {
             return true;
         }
 
@@ -959,14 +970,14 @@ public class Board {
                     Move.Flag.ROOK_PROMOTION_FLAG,
                     Move.Flag.QUEEN_PROMOTION_FLAG
                 }) {
-                    Move move = new Move(from, forwardSquare, promFlag, enPassantSquare, castlingRights, halfmoveClock, null);
+                    Move move = new Move(from, forwardSquare, promFlag, enPassantSquare10x12, castlingRights, halfmoveClock, null);
                     if (isMoveValid(move)) {
 //                        moveList[moveCount++].copyFrom(move);
                     }
                 }
             } else {
                 // Regular forward move
-                Move move = new Move(from, forwardSquare, Move.Flag.QUIET_MOVE_FLAG, enPassantSquare, castlingRights, halfmoveClock, null);
+                Move move = new Move(from, forwardSquare, Move.Flag.QUIET_MOVE_FLAG, enPassantSquare10x12, castlingRights, halfmoveClock, null);
                 if (isMoveValid(move)) {
 //                    moveList[moveCount++].copyFrom(move);
                 }
@@ -977,7 +988,7 @@ public class Board {
             if (toRank == startRank) {
                 int doubleSquare = from + 16 * direction;
                 if (board10x12.get(doubleSquare).isEmpty()) {
-                    Move move = new Move(from, doubleSquare, Move.Flag.DOUBLE_PAWN_PUSH_FLAG, enPassantSquare, castlingRights, halfmoveClock, null);
+                    Move move = new Move(from, doubleSquare, Move.Flag.DOUBLE_PAWN_PUSH_FLAG, enPassantSquare10x12, castlingRights, halfmoveClock, null);
                     if (isMoveValid(move)) {
 //                        moveList[moveCount++].copyFrom(move);
                     }
@@ -1002,20 +1013,20 @@ public class Board {
                             Move.Flag.ROOK_PROMOTION_CAPTURE_FLAG,
                             Move.Flag.QUEEN_PROMOTION_CAPTURE_FLAG
                         }) {
-                            Move move = new Move(from, captureSquare, promFlag, enPassantSquare, castlingRights, halfmoveClock, target);
+                            Move move = new Move(from, captureSquare, promFlag, enPassantSquare10x12, castlingRights, halfmoveClock, target);
                             if (isMoveValid(move)) {
 //                                moveList[moveCount++].copyFrom(move);
                             }
                         }
                     } else if (!target.isEmpty() && target.getColor() != playerToMove) {
                         // Regular capture
-                        Move move = new Move(from, captureSquare, Move.Flag.CAPTURES_FLAG, enPassantSquare, castlingRights, halfmoveClock, target);
+                        Move move = new Move(from, captureSquare, Move.Flag.CAPTURES_FLAG, enPassantSquare10x12, castlingRights, halfmoveClock, target);
                         if (isMoveValid(move)) {
 //                            moveList[moveCount++].copyFrom(move);
                         }
-                    } else if (enPassantSquare == captureSquare) {
+                    } else if (enPassantSquare10x12 == captureSquare) {
                         // En passant
-                        Move move = new Move(from, captureSquare, Move.Flag.EN_PASSANT_CAPTURE_FLAG, enPassantSquare, castlingRights, halfmoveClock, target);
+                        Move move = new Move(from, captureSquare, Move.Flag.EN_PASSANT_CAPTURE_FLAG, enPassantSquare10x12, castlingRights, halfmoveClock, target);
                         if (isMoveValid(move)) {
 //                            moveList[moveCount++].copyFrom(move);
                         }
@@ -1350,11 +1361,13 @@ public class Board {
             sb.append("- ");
         }
 
-        if (enPassantSquare == -1) {
+        if (enPassantSquare10x12 == -1) {
             sb.append("- ");
         } else {
             int file = enPassantSquare % 8;
             int rank = enPassantSquare / 8 + 1;
+            int file = enPassantSquare10x12 % 8;
+            int rank = enPassantSquare10x12 / 8 + 1;
 
             sb.append(switch (file) {
                 case 0 -> "a" + rank;
