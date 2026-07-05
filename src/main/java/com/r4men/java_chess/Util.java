@@ -100,6 +100,16 @@ public class Util {
         return (rank * 10) + file;
     }
 
+    public static int convertSquareTo8x8(String square) {
+        if (square.matches("^[a-hA-H][1-8]$")) {
+            char[] parts = square.toLowerCase().toCharArray();
+
+            return (Character.getNumericValue(parts[1]) - 1) * 8 + (parts[0] - 'a');
+        } else {
+            throw new IllegalArgumentException("Invalid square string: " + square);
+        }
+    }
+
     /**
      * Makes sure a bitboard has exactly 1 piece on it
      * @param bb 64 bit long bitboard
