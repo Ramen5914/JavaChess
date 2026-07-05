@@ -115,8 +115,16 @@ public class Piece {
         return pieceType == PieceType.OFF_BOARD;
     }
 
+    public boolean matchesColor(Color color) {
+        return this.color == color;
+    }
+
     public boolean isWhite() {
         return color == Color.WHITE;
+    }
+
+    public boolean isBlack() {
+        return color == Color.BLACK;
     }
 
     public boolean isPawn() {
