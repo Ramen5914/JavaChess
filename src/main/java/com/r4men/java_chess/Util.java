@@ -111,6 +111,44 @@ public class Util {
     }
 
     /**
+     * Converts a UCI move string into usable integers and PieceTypes for the Move constructor
+     * @param uciMove a string that matches ^([a-hA-H][1-8])([a-hA-H][1-8])([qrbn])?$ regex
+     * @return a pair container a pair of Integers (from8x8, to8x8) and a {@link Piece.PieceType PieceType} for promotion (null if no promotion)
+     * @throws IllegalArgumentException if the uciMove string does not match the regex
+     */
+    public static Pair<Pair<Integer, Integer>, Piece.@Nullable PieceType> convertUciTo8x8Move(String uciMove) {
+        String pattern = "^([a-h][1-8])([a-h][1-8])([qrbn])?$";
+        Pattern p = Pattern.compile(pattern);
+        Matcher m = p.matcher(uciMove.toLowerCase());
+
+        if (m.matches()) {
+            char[] fromSquare = m.group(1).toCharArray();
+            char[] toSquare = m.group(2).toCharArray();
+            char promotion = m.group(3) == null ? ' ' : m.group(3).charAt(0);
+
+            return new Pair<>(
+                    new Pair<>(
+                            (Character.getNumericValue(fromSquare[1]) - 1) * 8 + (fromSquare[0] - 'a'),
+                            (Character.getNumericValue(toSquare[1]) - 1) * 8 + (toSquare[0] - 'a')
+                    ),
+                    switch (promotion) {
+                        case 'q' -> Piece.PieceType.QUEEN;
+                        case 'r' -> Piece.PieceType.ROOK;
+                        case 'b' -> Piece.PieceType.BISHOP;
+                        case 'n' -> Piece.PieceType.KNIGHT;
+                        default -> null;
+                    }
+            );
+        } else {
+            throw new IllegalArgumentException("Invalid uciMove string: " + uciMove);
+        }
+    }
+
+    public static int convertSquareTo10x12(String square) {
+        return convert8x8to10x12(convertSquareTo8x8(square));
+    }
+
+    /**
      * Makes sure a bitboard has exactly 1 piece on it
      * @param bb 64 bit long bitboard
      * @return true if the long has only 1 bit set, false otherwise
