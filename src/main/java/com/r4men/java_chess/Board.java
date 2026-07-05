@@ -541,98 +541,11 @@ public class Board {
     }
 
     private boolean wouldBeInCheckAfterMove(Move move) {
-        // Temporarily apply the move
-        int from = move.getFrom();
-        int to = move.getTo();
+        makeMove(move, true);
+        boolean toReturn = isKingInCheck(playerToMove);
+        undoMove(move);
 
-        Piece piece = board10x12.get(from);
-        // For en passant captures the captured pawn is not on the destination square
-        Piece capturedPiece = move.isEnPassantCapture()
-                ? board10x12.get(to + (piece.isWhite() ? -8 : 8))
-                : board10x12.get(to);
-
-        // Apply the move temporarily
-        emptySquare(from);
-
-        // If en passant, also remove the captured pawn
-        if (move.isEnPassantCapture()) {
-            setSquare(to, piece);
-            if (piece.isWhite()) {
-                emptySquare(to - 8);
-            } else {
-                emptySquare(to + 8);
-            }
-        } else if (move.isKingCastle()) {
-            // For kingside castling, the move is encoded with 'to' == rook's original square
-            // Move king to final position and rook from its original square to its destination
-            if (playerToMove.isWhite()) {
-                setSquare(6, piece); // King to g1
-                emptySquare(7); // h1
-                setSquare(5, Piece.WHITE_ROOK); // f1
-            } else {
-                setSquare(62, piece); // King to g8
-                emptySquare(63); // h8
-                setSquare(61, Piece.BLACK_ROOK); // f8
-            }
-        } else if (move.isQueenCastle()) {
-            // For queenside castling, the move is encoded with 'to' == rook's original square
-            // Move king to final position and rook from its original square to its destination
-            if (playerToMove.isWhite()) {
-                setSquare(2, piece); // King to c1
-                emptySquare(0); // a1
-                setSquare(3, Piece.WHITE_ROOK); // d1
-            } else {
-                setSquare(58, piece); // King to c8
-                emptySquare(56); // a8
-                setSquare(59, Piece.BLACK_ROOK); // d8
-            }
-        } else {
-            setSquare(to, piece);
-        }
-
-        // Check if king is in check
-        boolean inCheck = isKingInCheck(playerToMove);
-
-        // Undo the move
-        if (move.isEnPassantCapture()) {
-            emptySquare(to);
-            setSquare(from, piece);
-            setSquare(to + (piece.isWhite() ? -8 : 8), capturedPiece);
-        } else if (move.isKingCastle()) {
-            // Restore kingside castling
-            if (playerToMove.isWhite()) {
-                emptySquare(6); // g1
-                emptySquare(5); // f1
-                setSquare(from, piece); // King back to e1
-                setSquare(7, Piece.WHITE_ROOK); // Rook back to h1
-            } else {
-                emptySquare(62); // g8
-                emptySquare(61); // f8
-                setSquare(from, piece); // King back to e8
-                setSquare(63, Piece.BLACK_ROOK); // Rook back to h8
-            }
-        } else if (move.isQueenCastle()) {
-            // Restore queenside castling
-            if (playerToMove.isWhite()) {
-                emptySquare(2); // c1
-                emptySquare(3); // d1
-                setSquare(from, piece); // King back to e1
-                setSquare(0, Piece.WHITE_ROOK); // Rook back to a1
-            } else {
-                emptySquare(58); // c8
-                emptySquare(59); // d8
-                setSquare(from, piece); // King back to e8
-                setSquare(56, Piece.BLACK_ROOK); // Rook back to a8
-            }
-        } else {
-            emptySquare(to);
-            setSquare(from, piece);
-            if (!capturedPiece.isEmpty()) {
-                setSquare(to, capturedPiece);
-            }
-        }
-
-        return inCheck;
+        return toReturn;
     }
 
     private boolean isKingInCheck(Piece.Color color) {
