@@ -22,6 +22,15 @@ public class Util {
     //   | 0A 0B 0C 0D 0E 0F 10 11 12 13 |
     //   | 00 01 02 03 04 05 06 07 08 09 |
     //         A  B  C  D  E  F  G  H
+    private static final boolean[] board10x12 = new boolean[120];
+
+    static {
+        for (int i = 0; i < 120; i++) {
+            if (i % 10 != 0 && i % 10 != 9 && i > 0x14 && i < 0x63) {
+                board10x12[i] = true;
+            }
+        }
+    }
 
     public static int convert10x12to8x8(int s10x12) {
         if (s10x12 % 10 == 0 || s10x12 % 10 == 9 || s10x12 <= 0x14 || s10x12 >= 0x63) {
