@@ -3,6 +3,9 @@ package com.r4men.java_chess;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+import java.util.Set;
+
 public class UtilTest {
     @Test
     void convert10x12to8x8() {
