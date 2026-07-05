@@ -377,13 +377,43 @@ public class Board {
         }
     }
 
+    private void markEnPassantSquare(@NotNull Move move) {
+        int to = move.getTo10x12();
 
-            flipPlayerToMove();
+        int leftIndex = move.getTo10x12() + Direction.D10X12.W.toInt();
+        Piece left = board10x12.get(leftIndex);
+
+        int rightIndex = move.getTo10x12() + Direction.D10X12.E.toInt();
+        Piece right = board10x12.get(rightIndex);
+
+        int pEnPassantSquare = switch (playerToMove) {
+            case WHITE -> to + Direction.D10X12.S.toInt();
+            case BLACK -> to + Direction.D10X12.N.toInt();
+            default -> throw new IllegalStateException("PlayerToMove is neither WHITE nor BLACK: " + playerToMove);
+        };
+
+        boolean enPassantIsPossible = false;
+
+        switch (playerToMove) {
+            case WHITE -> {
+                if (left.equals(Piece.BLACK_PAWN)) {
                     enPassantIsPossible = isMoveValid(new Move(Util.convert10x12to8x8(leftIndex), Util.convert10x12to8x8(pEnPassantSquare), Move.Flag.EN_PASSANT_CAPTURE_FLAG, enPassantSquare10x12, castlingRights, halfmoveClock, board10x12.get(pEnPassantSquare)));
+                } else if (right.equals(Piece.BLACK_PAWN)) {
                     enPassantIsPossible = isMoveValid(new Move(Util.convert10x12to8x8(rightIndex), Util.convert10x12to8x8(pEnPassantSquare), Move.Flag.EN_PASSANT_CAPTURE_FLAG, enPassantSquare10x12, castlingRights, halfmoveClock, board10x12.get(pEnPassantSquare)));
+                }
+            }
+            case BLACK -> {
+                if (left.equals(Piece.WHITE_PAWN)) {
                     enPassantIsPossible = isMoveValid(new Move(Util.convert10x12to8x8(leftIndex), Util.convert10x12to8x8(pEnPassantSquare), Move.Flag.EN_PASSANT_CAPTURE_FLAG, enPassantSquare10x12, castlingRights, halfmoveClock, board10x12.get(pEnPassantSquare)));
+                } else if (right.equals(Piece.WHITE_PAWN)) {
                     enPassantIsPossible = isMoveValid(new Move(Util.convert10x12to8x8(rightIndex), Util.convert10x12to8x8(pEnPassantSquare), Move.Flag.EN_PASSANT_CAPTURE_FLAG, enPassantSquare10x12, castlingRights, halfmoveClock, board10x12.get(pEnPassantSquare)));
+                }
+            }
+        }
+
+        if (enPassantIsPossible) {
             enPassantSquare10x12 = pEnPassantSquare;
+        } else {
             enPassantSquare10x12 = -1;
         }
     }
