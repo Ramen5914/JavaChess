@@ -140,6 +140,14 @@ public class Board {
         int to = move.getTo();
 
         Piece piece = board10x12.get(from);
+    public void makeMove(String move) {
+        if (move.matches("^([a-hA-H][1-8])([a-hA-H][1-8])([qrbn])?$")) {
+            Move m = createMoveFromString(move);
+            makeMove(m);
+        } else {
+            throw new IllegalArgumentException("Invalid move string: " + move);
+        }
+    }
 
         if (isMoveValid(move)) {
             emptySquare(from);
