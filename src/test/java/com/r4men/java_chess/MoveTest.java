@@ -22,56 +22,56 @@ class MoveTest {
 
     @BeforeEach
     void beforeEach() {
-        move1 = new Move(0, 63, Move.Flag.QUIET_MOVE_FLAG);
-        move2 = new Move(8, 24, Move.Flag.DOUBLE_PAWN_PUSH_FLAG);
-        move3 = new Move(4, 7, Move.Flag.KING_CASTLE_FLAG);
-        move4 = new Move(4, 0, Move.Flag.QUEEN_CASTLE_FLAG);
-        move5 = new Move(28, 35, Move.Flag.CAPTURES_FLAG);
-        move6 = new Move(29, 20, Move.Flag.EN_PASSANT_CAPTURE_FLAG);
-        move7 = new Move(48, 56, Move.Flag.KNIGHT_PROMOTION_FLAG);
-        move8 = new Move(49, 57, Move.Flag.BISHOP_PROMOTION_FLAG);
-        move9 = new Move(50, 58, Move.Flag.ROOK_PROMOTION_FLAG);
-        move10 = new Move(51, 59, Move.Flag.QUEEN_PROMOTION_FLAG);
-        move11 = new Move(51, 60, Move.Flag.KNIGHT_PROMOTION_CAPTURE_FLAG);
-        move12 = new Move(52, 61, Move.Flag.BISHOP_PROMOTION_CAPTURE_FLAG);
-        move13 = new Move(53, 62, Move.Flag.ROOK_PROMOTION_CAPTURE_FLAG);
-        move14 = new Move(54, 63, Move.Flag.QUEEN_PROMOTION_CAPTURE_FLAG);
+//        move1 = new Move(0, 63, Move.Flag.QUIET_MOVE_FLAG);
+//        move2 = new Move(8, 24, Move.Flag.DOUBLE_PAWN_PUSH_FLAG);
+//        move3 = new Move(4, 7, Move.Flag.KING_CASTLE_FLAG);
+//        move4 = new Move(4, 0, Move.Flag.QUEEN_CASTLE_FLAG);
+//        move5 = new Move(28, 35, Move.Flag.CAPTURES_FLAG);
+//        move6 = new Move(29, 20, Move.Flag.EN_PASSANT_CAPTURE_FLAG);
+//        move7 = new Move(48, 56, Move.Flag.KNIGHT_PROMOTION_FLAG);
+//        move8 = new Move(49, 57, Move.Flag.BISHOP_PROMOTION_FLAG);
+//        move9 = new Move(50, 58, Move.Flag.ROOK_PROMOTION_FLAG);
+//        move10 = new Move(51, 59, Move.Flag.QUEEN_PROMOTION_FLAG);
+//        move11 = new Move(51, 60, Move.Flag.KNIGHT_PROMOTION_CAPTURE_FLAG);
+//        move12 = new Move(52, 61, Move.Flag.BISHOP_PROMOTION_CAPTURE_FLAG);
+//        move13 = new Move(53, 62, Move.Flag.ROOK_PROMOTION_CAPTURE_FLAG);
+//        move14 = new Move(54, 63, Move.Flag.QUEEN_PROMOTION_CAPTURE_FLAG);
     }
 
     @Test
-    void getFrom() {
-        assertEquals(0, move1.getFrom());
-        assertEquals(8, move2.getFrom());
-        assertEquals(4, move3.getFrom());
-        assertEquals(4, move4.getFrom());
-        assertEquals(28, move5.getFrom());
-        assertEquals(29, move6.getFrom());
-        assertEquals(48, move7.getFrom());
-        assertEquals(49, move8.getFrom());
-        assertEquals(50, move9.getFrom());
-        assertEquals(51, move10.getFrom());
-        assertEquals(51, move11.getFrom());
-        assertEquals(52, move12.getFrom());
-        assertEquals(53, move13.getFrom());
-        assertEquals(54, move14.getFrom());
+    void getFrom8x8() {
+        assertEquals(0, move1.getFrom8x8());
+        assertEquals(8, move2.getFrom8x8());
+        assertEquals(4, move3.getFrom8x8());
+        assertEquals(4, move4.getFrom8x8());
+        assertEquals(28, move5.getFrom8x8());
+        assertEquals(29, move6.getFrom8x8());
+        assertEquals(48, move7.getFrom8x8());
+        assertEquals(49, move8.getFrom8x8());
+        assertEquals(50, move9.getFrom8x8());
+        assertEquals(51, move10.getFrom8x8());
+        assertEquals(51, move11.getFrom8x8());
+        assertEquals(52, move12.getFrom8x8());
+        assertEquals(53, move13.getFrom8x8());
+        assertEquals(54, move14.getFrom8x8());
     }
 
     @Test
-    void getTo() {
-        assertEquals(63, move1.getTo());
-        assertEquals(24, move2.getTo());
-        assertEquals(7, move3.getTo());
-        assertEquals(0, move4.getTo());
-        assertEquals(35, move5.getTo());
-        assertEquals(20, move6.getTo());
-        assertEquals(56, move7.getTo());
-        assertEquals(57, move8.getTo());
-        assertEquals(58, move9.getTo());
-        assertEquals(59, move10.getTo());
-        assertEquals(60, move11.getTo());
-        assertEquals(61, move12.getTo());
-        assertEquals(62, move13.getTo());
-        assertEquals(63, move14.getTo());
+    void getTo8x8() {
+        assertEquals(63, move1.getTo8x8());
+        assertEquals(24, move2.getTo8x8());
+        assertEquals(7, move3.getTo8x8());
+        assertEquals(0, move4.getTo8x8());
+        assertEquals(35, move5.getTo8x8());
+        assertEquals(20, move6.getTo8x8());
+        assertEquals(56, move7.getTo8x8());
+        assertEquals(57, move8.getTo8x8());
+        assertEquals(58, move9.getTo8x8());
+        assertEquals(59, move10.getTo8x8());
+        assertEquals(60, move11.getTo8x8());
+        assertEquals(61, move12.getTo8x8());
+        assertEquals(62, move13.getTo8x8());
+        assertEquals(63, move14.getTo8x8());
     }
 
     @Test
