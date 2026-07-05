@@ -1,5 +1,11 @@
 package com.r4men.java_chess;
 
+import javafx.util.Pair;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class Util {
     //                 HEX:
     //         A  B  C  D  E  F  G  H
