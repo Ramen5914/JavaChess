@@ -34,7 +34,7 @@ public class Util {
 
     public static int convert10x12to8x8(int s10x12) {
         if (s10x12 % 10 == 0 || s10x12 % 10 == 9 || s10x12 <= 0x14 || s10x12 >= 0x63) {
-            throw new  IllegalArgumentException("Invalid 10x12 square (Off-Board on 8x8): " + s10x12);
+            throw new  IllegalArgumentException("Invalid 10x12 square (Off-Board on 8x8): " + String.format("0x%2s", Integer.toHexString(s10x12).toUpperCase()).replace(' ', '0'));
         }
 
         int rank = (s10x12 - 21) / 10;
