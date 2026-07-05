@@ -222,31 +222,161 @@ public class Board {
         makeMove(move, false);
     }
 
+    public void makeMove(@Nullable Move move, boolean ignoreSelfCheck) {
+        if (move != null) {
+            int from8x8 = move.getFrom8x8();
+            int to8x8 = move.getTo8x8();
+
+            int from10x12 = move.getFrom10x12();
+            int to10x12 = move.getTo10x12();
+
+            Piece piece = board10x12.get(from10x12);
+
+            if (isMoveValid(move, ignoreSelfCheck)) {
+                emptySquare10x12(from10x12);
+                emptySquare10x12(to10x12);
+
+                enPassantSquare10x12 = -1;
+
+                if (move.isQuiet() || move.isDoublePawnPush()) {
+                    setSquare10x12(to10x12, piece);
+
+                    if (move.isDoublePawnPush()) {
+                        markEnPassantSquare(move);
+                    }
+                } else if (move.isCapture()) {
+                    if (move.isPromotion()) {
+                        Piece.Color color = piece.getColor();
+
+                        if (move.isQueenPromotion()) {
+                            if (color.isWhite()) {
+//                                setSquare10x12(to, Piece.WHITE_QUEEN);
+                            } else {
+//                                setSquare10x12(to, Piece.BLACK_QUEEN);
                             }
-                            if (from == 63) { // h8
-                                castlingRights &= ~0b0100; // Remove k (kingside)
+                        } else if (move.isRookPromotion()) {
+                            if (color.isWhite()) {
+//                                setSquare10x12(to, Piece.WHITE_ROOK);
+                            } else {
+//                                setSquare10x12(to, Piece.BLACK_ROOK);
                             }
                         }
-                        // Remove opponent's castling rights if rook is captured
-                        if (move.isCapture()) {
-                            if (to == 0) { // a1
-                                castlingRights &= ~0b0010; // Remove Q (white queenside)
-                            }
-                            if (to == 7) { // h1
-                                castlingRights &= ~0b0001; // Remove K (white kingside)
-                            }
+                    } else {
+//                        setSquare10x12(to, piece);
+
+                        if (move.isEnPassantCapture()) {
+                            removeEnPassantPawn(move);
                         }
                     }
-
-                    break;
+                } else if (move.isKingCastle()) {
+                    // For kingside castling, the move is encoded with 'to' == rook's original square
+                    // King moves to the appropriate square and rook is moved from its original square
+                    if (playerToMove.isWhite()) {
+                        // King from e1 to g1
+                        setSquare10x12(6, piece);
+//                        emptySquare10x12(from);
+                        // Rook moves to f1 (which is 'to')
+                        setSquare10x12(5, Piece.WHITE_ROOK);
+                        emptySquare10x12(7);
+                    } else {
+                        // King from e8 to g8
+                        setSquare10x12(62, piece);
+//                        emptySquare10x12(from);
+                        // Rook moves to f8 (which is 'to')
+                        setSquare10x12(61, Piece.BLACK_ROOK);
+                        emptySquare10x12(63);
+                    }
+                } else if (move.isQueenCastle()) {
+                    // For queenside castling, the move is encoded with 'to' == rook's original square
+                    // King moves to the appropriate square and rook is moved from its original square
+                    if (playerToMove.isWhite()) {
+                        // King from e1 to c1
+                        setSquare10x12(2, piece);
+//                        emptySquare10x12(from);
+                        // Rook moves to d1 (which is 'to')
+                        setSquare10x12(3, Piece.WHITE_ROOK);
+                        emptySquare10x12(0);
+                    } else {
+                        // King from e8 to c8
+                        setSquare10x12(58, piece);
+//                        emptySquare10x12(from);
+                        // Rook moves to d8 (which is 'to')
+                        setSquare10x12(59, Piece.BLACK_ROOK);
+                        emptySquare10x12(56);
+                    }
                 }
-            }
 
-            if (piece.isPawn() || move.isCapture()) {
-                halfmoveClock = 0;
-            } else {
-                halfmoveClock++;
+//                switch (playerToMove) {
+//                    case WHITE: {
+//                        if ((castlingRights & 0b0011) != 0) {
+//                            // Remove castling rights if king moves
+//                            if (piece.isKing()) {
+//                                castlingRights &= ~0b0011; // Remove KQ
+//                            }
+//                            // Remove castling rights if rook moves from initial position
+//                            if (piece.getPieceType() == Piece.PieceType.ROOK) {
+//                                if (from == 0) { // a1
+//                                    castlingRights &= ~0b0010; // Remove Q (queenside)
+//                                }
+//                                if (from == 7) { // h1
+//                                    castlingRights &= ~0b0001; // Remove K (kingside)
+//                                }
+//                            }
+//                            // Remove opponent's castling rights if rook is captured
+//                            if (move.isCapture()) {
+//                                if (to == 56) { // a8
+//                                    castlingRights &= ~0b1000; // Remove q (black queenside)
+//                                }
+//                                if (to == 63) { // h8
+//                                    castlingRights &= ~0b0100; // Remove k (black kingside)
+//                                }
+//                            }
+//                        }
+//
+//                        break;
+//                    }
+//                    case BLACK: {
+//                        if ((castlingRights & 0b1100) != 0) {
+//                            // Remove castling rights if king moves
+//                            if (piece.getPieceType() == Piece.PieceType.KING) {
+//                                castlingRights &= ~0b0100; // Remove k (kingside)
+//                                castlingRights &= ~0b1000; // Remove q (queenside)
+//                            }
+//                            // Remove castling rights if rook moves from initial position
+//                            if (piece.getPieceType() == Piece.PieceType.ROOK) {
+//                                if (from == 56) { // a8
+//                                    castlingRights &= ~0b1000; // Remove q (queenside)
+//                                }
+//                                if (from == 63) { // h8
+//                                    castlingRights &= ~0b0100; // Remove k (kingside)
+//                                }
+//                            }
+//                            // Remove opponent's castling rights if rook is captured
+//                            if (move.isCapture()) {
+//                                if (to == 0) { // a1
+//                                    castlingRights &= ~0b0010; // Remove Q (white queenside)
+//                                }
+//                                if (to == 7) { // h1
+//                                    castlingRights &= ~0b0001; // Remove K (white kingside)
+//                                }
+//                            }
+//                        }
+//
+//                        break;
+//                    }
+//                }
+
+                if (piece.isPawn() || move.isCapture()) {
+                    halfmoveClock = 0;
+                } else {
+                    halfmoveClock++;
+                }
+
+                flipPlayerToMove();
             }
+        }
+    }
+
 
             flipPlayerToMove();
                     enPassantIsPossible = isMoveValid(new Move(Util.convert10x12to8x8(leftIndex), Util.convert10x12to8x8(pEnPassantSquare), Move.Flag.EN_PASSANT_CAPTURE_FLAG, enPassantSquare10x12, castlingRights, halfmoveClock, board10x12.get(pEnPassantSquare)));
