@@ -233,6 +233,13 @@ public class Board {
             Piece piece = board10x12.get(from10x12);
 
             if (isMoveValid(move, ignoreSelfCheck)) {
+                if (piece.isPawn() || move.isCapture()) {
+                    halfmoveClock = 0;
+                } else {
+                    halfmoveClock++;
+                }
+                flipPlayerToMove();
+
                 emptySquare10x12(from10x12);
                 emptySquare10x12(to10x12);
 
@@ -305,13 +312,6 @@ public class Board {
                         emptySquare10x12(56);
                     }
                 }
-                if (piece.isPawn() || move.isCapture()) {
-                    halfmoveClock = 0;
-                } else {
-                    halfmoveClock++;
-                }
-
-                flipPlayerToMove();
             }
         }
     }
