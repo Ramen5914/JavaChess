@@ -255,6 +255,7 @@ public class Board {
                     if (move.isPromotion()) {
                         Piece.Color color = piece.getColor();
 
+                        // TODO finish promotion logic
                         if (move.isQueenPromotion()) {
                             if (color.isWhite()) {
 //                                setSquare10x12(to, Piece.WHITE_QUEEN);
@@ -316,6 +317,14 @@ public class Board {
         }
     }
 
+    // TODO make real javadoc
+    /**
+     * blah blah blah
+     * <p>
+     * Before this function is called, the player to move has already been swapped, because the move has already been made
+     *
+     * @param move the move that was just made
+     */
     private void markEnPassantSquare(@NotNull Move move) {
         int to = move.getTo10x12();
 
