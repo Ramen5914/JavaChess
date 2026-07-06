@@ -305,67 +305,6 @@ public class Board {
                         emptySquare10x12(56);
                     }
                 }
-
-//                switch (playerToMove) {
-//                    case WHITE: {
-//                        if ((castlingRights & 0b0011) != 0) {
-//                            // Remove castling rights if king moves
-//                            if (piece.isKing()) {
-//                                castlingRights &= ~0b0011; // Remove KQ
-//                            }
-//                            // Remove castling rights if rook moves from initial position
-//                            if (piece.getPieceType() == Piece.PieceType.ROOK) {
-//                                if (from == 0) { // a1
-//                                    castlingRights &= ~0b0010; // Remove Q (queenside)
-//                                }
-//                                if (from == 7) { // h1
-//                                    castlingRights &= ~0b0001; // Remove K (kingside)
-//                                }
-//                            }
-//                            // Remove opponent's castling rights if rook is captured
-//                            if (move.isCapture()) {
-//                                if (to == 56) { // a8
-//                                    castlingRights &= ~0b1000; // Remove q (black queenside)
-//                                }
-//                                if (to == 63) { // h8
-//                                    castlingRights &= ~0b0100; // Remove k (black kingside)
-//                                }
-//                            }
-//                        }
-//
-//                        break;
-//                    }
-//                    case BLACK: {
-//                        if ((castlingRights & 0b1100) != 0) {
-//                            // Remove castling rights if king moves
-//                            if (piece.getPieceType() == Piece.PieceType.KING) {
-//                                castlingRights &= ~0b0100; // Remove k (kingside)
-//                                castlingRights &= ~0b1000; // Remove q (queenside)
-//                            }
-//                            // Remove castling rights if rook moves from initial position
-//                            if (piece.getPieceType() == Piece.PieceType.ROOK) {
-//                                if (from == 56) { // a8
-//                                    castlingRights &= ~0b1000; // Remove q (queenside)
-//                                }
-//                                if (from == 63) { // h8
-//                                    castlingRights &= ~0b0100; // Remove k (kingside)
-//                                }
-//                            }
-//                            // Remove opponent's castling rights if rook is captured
-//                            if (move.isCapture()) {
-//                                if (to == 0) { // a1
-//                                    castlingRights &= ~0b0010; // Remove Q (white queenside)
-//                                }
-//                                if (to == 7) { // h1
-//                                    castlingRights &= ~0b0001; // Remove K (white kingside)
-//                                }
-//                            }
-//                        }
-//
-//                        break;
-//                    }
-//                }
-
                 if (piece.isPawn() || move.isCapture()) {
                     halfmoveClock = 0;
                 } else {
