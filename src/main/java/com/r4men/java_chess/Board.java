@@ -269,7 +269,7 @@ public class Board {
                             }
                         }
                     } else {
-//                        setSquare10x12(to, piece);
+                        setSquare10x12(to10x12, piece);
 
                         if (move.isEnPassantCapture()) {
                             removeEnPassantPawn(move);
