@@ -334,7 +334,7 @@ public class Board {
         int rightIndex = move.getTo10x12() + Direction.D10X12.E.toInt();
         Piece right = board10x12.get(rightIndex);
 
-        int pEnPassantSquare = switch (playerToMove) {
+        enPassantSquare10x12 = switch (playerToMove.opposite()) {
             case WHITE -> to + Direction.D10X12.S.toInt();
             case BLACK -> to + Direction.D10X12.N.toInt();
             default -> throw new IllegalStateException("PlayerToMove is neither WHITE nor BLACK: " + playerToMove);
@@ -342,26 +342,24 @@ public class Board {
 
         boolean enPassantIsPossible = false;
 
-        switch (playerToMove) {
+        switch (playerToMove.opposite()) {
             case WHITE -> {
                 if (left.equals(Piece.BLACK_PAWN)) {
-                    enPassantIsPossible = isMoveValid(new Move(Util.convert10x12to8x8(leftIndex), Util.convert10x12to8x8(pEnPassantSquare), Move.Flag.EN_PASSANT_CAPTURE_FLAG, enPassantSquare10x12, castlingRights, halfmoveClock, board10x12.get(pEnPassantSquare)));
+                    enPassantIsPossible = isMoveValid(new Move(Util.convert10x12to8x8(leftIndex), Util.convert10x12to8x8(enPassantSquare10x12), Move.Flag.EN_PASSANT_CAPTURE_FLAG, enPassantSquare10x12, castlingRights, halfmoveClock, board10x12.get(enPassantSquare10x12)));
                 } else if (right.equals(Piece.BLACK_PAWN)) {
-                    enPassantIsPossible = isMoveValid(new Move(Util.convert10x12to8x8(rightIndex), Util.convert10x12to8x8(pEnPassantSquare), Move.Flag.EN_PASSANT_CAPTURE_FLAG, enPassantSquare10x12, castlingRights, halfmoveClock, board10x12.get(pEnPassantSquare)));
+                    enPassantIsPossible = isMoveValid(new Move(Util.convert10x12to8x8(rightIndex), Util.convert10x12to8x8(enPassantSquare10x12), Move.Flag.EN_PASSANT_CAPTURE_FLAG, enPassantSquare10x12, castlingRights, halfmoveClock, board10x12.get(enPassantSquare10x12)));
                 }
             }
             case BLACK -> {
                 if (left.equals(Piece.WHITE_PAWN)) {
-                    enPassantIsPossible = isMoveValid(new Move(Util.convert10x12to8x8(leftIndex), Util.convert10x12to8x8(pEnPassantSquare), Move.Flag.EN_PASSANT_CAPTURE_FLAG, enPassantSquare10x12, castlingRights, halfmoveClock, board10x12.get(pEnPassantSquare)));
+                    enPassantIsPossible = isMoveValid(new Move(Util.convert10x12to8x8(leftIndex), Util.convert10x12to8x8(enPassantSquare10x12), Move.Flag.EN_PASSANT_CAPTURE_FLAG, enPassantSquare10x12, castlingRights, halfmoveClock, board10x12.get(enPassantSquare10x12)));
                 } else if (right.equals(Piece.WHITE_PAWN)) {
-                    enPassantIsPossible = isMoveValid(new Move(Util.convert10x12to8x8(rightIndex), Util.convert10x12to8x8(pEnPassantSquare), Move.Flag.EN_PASSANT_CAPTURE_FLAG, enPassantSquare10x12, castlingRights, halfmoveClock, board10x12.get(pEnPassantSquare)));
+                    enPassantIsPossible = isMoveValid(new Move(Util.convert10x12to8x8(rightIndex), Util.convert10x12to8x8(enPassantSquare10x12), Move.Flag.EN_PASSANT_CAPTURE_FLAG, enPassantSquare10x12, castlingRights, halfmoveClock, board10x12.get(enPassantSquare10x12)));
                 }
             }
         }
 
-        if (enPassantIsPossible) {
-            enPassantSquare10x12 = pEnPassantSquare;
-        } else {
+        if (!enPassantIsPossible) {
             enPassantSquare10x12 = -1;
         }
     }
@@ -479,12 +477,12 @@ public class Board {
     }
 
     private void removeEnPassantPawn(Move move) {
-        int to = move.getTo8x8();
+        int to10x12 = move.getTo10x12();
 
-        if (board10x12.get(to).isWhite()) {
-            emptySquare10x12(to - 8);
+        if (playerToMove.isWhite()) {
+            emptySquare10x12(to10x12 + Direction.D10X12.S.toInt());
         } else {
-            emptySquare10x12(to + 8);
+            emptySquare10x12(to10x12 + Direction.D10X12.N.toInt());
         }
     }
 
@@ -620,7 +618,7 @@ public class Board {
 
         Piece destinationPiece = board10x12.get(to10x12);
 
-        if (move.isCapture() && destinationPiece.isEmpty()) {
+        if (move.isCapture() && destinationPiece.isEmpty() && !move.isEnPassantCapture()) {
             return false;
         } else if (!movedPiece.isPawn() && move.isPromotion()) {
             return false;
@@ -651,10 +649,9 @@ public class Board {
 
         Direction.D10X12 direction = playerToMove.isWhite() ? Direction.D10X12.N : Direction.D10X12.S;
 
-        int fromRank = from10x12 / 10 - 1;
-
         if (move.isDoublePawnPush()) {
             int validStartRank = playerToMove.isWhite() ? 2 : 7;
+            int fromRank = from10x12 / 10 - 1;
 
             if (fromRank == validStartRank && to10x12 == from10x12 + direction.toInt() * 2) {
                 return isPathClear10x12(from10x12, to10x12, direction);
@@ -662,14 +659,9 @@ public class Board {
                 return false;
             }
         } else if (move.isEnPassantCapture()) {
-            // En passant capture
-//            if (rankDiff != direction || Math.abs(fileDiff) != 1) {
-//                return false;
-//            }
-//            if (enPassantSquare10x12 != to) {
-//                return false;
-//            }
-            return true;
+            int frontOfPawn = move.getFrom10x12() + direction.toInt();
+
+            return frontOfPawn + Direction.D10X12.E.toInt() == enPassantSquare10x12 || frontOfPawn + Direction.D10X12.W.toInt() == enPassantSquare10x12;
         }
 
         if (move.isPromotion()) {
