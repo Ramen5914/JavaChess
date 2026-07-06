@@ -243,8 +243,6 @@ public class Board {
                 emptySquare10x12(from10x12);
                 emptySquare10x12(to10x12);
 
-                enPassantSquare10x12 = -1;
-
                 if (move.isQuiet() || move.isDoublePawnPush()) {
                     setSquare10x12(to10x12, piece);
 
@@ -314,6 +312,8 @@ public class Board {
                     }
                 }
             }
+
+            enPassantSquare10x12 = -1;
         }
     }
 
