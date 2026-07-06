@@ -179,24 +179,22 @@ public class Board {
                 if (fromPiece.isPawn()) {
                     if (Math.abs(to8x8 - from8x8) == Direction.D8X8.N.toInt() * 2) {
                         flag = Move.Flag.DOUBLE_PAWN_PUSH_FLAG;
+                    } else if (to10x12 == enPassantSquare10x12) {
+                        capturedPiece = board10x12.get(to10x12);
+                        flag = Move.Flag.EN_PASSANT_CAPTURE_FLAG;
                     } else if (fromPiece.getColor().opposite() == toPiece.getColor()) {
-                        if (to10x12 == enPassantSquare10x12) {
-                            capturedPiece = board10x12.get(to10x12);
-                            flag = Move.Flag.EN_PASSANT_CAPTURE_FLAG;
-                        } else {
-                            capturedPiece = board10x12.get(to10x12);
+                        capturedPiece = board10x12.get(to10x12);
 
-                            if (promotionPiece != null) {
-                                flag = switch (promotionPiece) {
-                                    case KNIGHT -> Move.Flag.KNIGHT_PROMOTION_CAPTURE_FLAG;
-                                    case BISHOP -> Move.Flag.BISHOP_PROMOTION_CAPTURE_FLAG;
-                                    case ROOK -> Move.Flag.ROOK_PROMOTION_CAPTURE_FLAG;
-                                    case QUEEN -> Move.Flag.QUEEN_PROMOTION_CAPTURE_FLAG;
-                                    default -> throw new IllegalArgumentException("Invalid promotion piece: " + promotionPiece);
-                                };
-                            } else {
-                                flag = Move.Flag.CAPTURES_FLAG;
-                            }
+                        if (promotionPiece != null) {
+                            flag = switch (promotionPiece) {
+                                case KNIGHT -> Move.Flag.KNIGHT_PROMOTION_CAPTURE_FLAG;
+                                case BISHOP -> Move.Flag.BISHOP_PROMOTION_CAPTURE_FLAG;
+                                case ROOK -> Move.Flag.ROOK_PROMOTION_CAPTURE_FLAG;
+                                case QUEEN -> Move.Flag.QUEEN_PROMOTION_CAPTURE_FLAG;
+                                default -> throw new IllegalArgumentException("Invalid promotion piece: " + promotionPiece);
+                            };
+                        } else {
+                            flag = Move.Flag.CAPTURES_FLAG;
                         }
                     } else if (promotionPiece != null) {
                         flag = switch (promotionPiece) {
@@ -311,9 +309,11 @@ public class Board {
                         emptySquare10x12(56);
                     }
                 }
-            }
 
-            enPassantSquare10x12 = -1;
+                if (!move.isDoublePawnPush()) {
+                    enPassantSquare10x12 = -1;
+                }
+            }
         }
     }
 
@@ -334,39 +334,22 @@ public class Board {
         int rightIndex = move.getTo10x12() + Direction.D10X12.E.toInt();
         Piece right = board10x12.get(rightIndex);
 
-        enPassantSquare10x12 = switch (playerToMove.opposite()) {
-            case WHITE -> to + Direction.D10X12.S.toInt();
-            case BLACK -> to + Direction.D10X12.N.toInt();
-            default -> throw new IllegalStateException("PlayerToMove is neither WHITE nor BLACK: " + playerToMove);
-        };
-
-        boolean enPassantIsPossible = false;
-
-        switch (playerToMove.opposite()) {
+        enPassantSquare10x12 = switch (playerToMove) {
             case WHITE -> {
-                if (left.equals(Piece.BLACK_PAWN)) {
-                    enPassantIsPossible = isMoveValid(new Move(Util.convert10x12to8x8(leftIndex), Util.convert10x12to8x8(enPassantSquare10x12), Move.Flag.EN_PASSANT_CAPTURE_FLAG, enPassantSquare10x12, castlingRights, halfmoveClock, board10x12.get(enPassantSquare10x12)));
-                } else if (right.equals(Piece.BLACK_PAWN)) {
-                    enPassantIsPossible = isMoveValid(new Move(Util.convert10x12to8x8(rightIndex), Util.convert10x12to8x8(enPassantSquare10x12), Move.Flag.EN_PASSANT_CAPTURE_FLAG, enPassantSquare10x12, castlingRights, halfmoveClock, board10x12.get(enPassantSquare10x12)));
-                }
+                // It's WHITE's turn, so BLACK just moved SOUTH. En passant square is one rank NORTH of destination.
+                yield to + Direction.D10X12.N.toInt();
             }
             case BLACK -> {
-                if (left.equals(Piece.WHITE_PAWN)) {
-                    enPassantIsPossible = isMoveValid(new Move(Util.convert10x12to8x8(leftIndex), Util.convert10x12to8x8(enPassantSquare10x12), Move.Flag.EN_PASSANT_CAPTURE_FLAG, enPassantSquare10x12, castlingRights, halfmoveClock, board10x12.get(enPassantSquare10x12)));
-                } else if (right.equals(Piece.WHITE_PAWN)) {
-                    enPassantIsPossible = isMoveValid(new Move(Util.convert10x12to8x8(rightIndex), Util.convert10x12to8x8(enPassantSquare10x12), Move.Flag.EN_PASSANT_CAPTURE_FLAG, enPassantSquare10x12, castlingRights, halfmoveClock, board10x12.get(enPassantSquare10x12)));
-                }
+                // It's BLACK's turn, so WHITE just moved NORTH. En passant square is one rank SOUTH of destination.
+                yield to + Direction.D10X12.S.toInt();
             }
-        }
-
-        if (!enPassantIsPossible) {
-            enPassantSquare10x12 = -1;
-        }
+            default -> throw new IllegalStateException("PlayerToMove is neither WHITE nor BLACK: " + playerToMove);
+        };
     }
 
     public void undoMove(Move move) {
         int from10x12 = move.getFrom10x12();
-        int to10x12 = move.getFrom10x12();
+        int to10x12 = move.getTo10x12();
         Piece piece = board10x12.get(to10x12);
 
         // p means previous
@@ -480,9 +463,11 @@ public class Board {
         int to10x12 = move.getTo10x12();
 
         if (playerToMove.isWhite()) {
-            emptySquare10x12(to10x12 + Direction.D10X12.S.toInt());
+            int removeSquare = to10x12 + Direction.D10X12.N.toInt();
+            emptySquare10x12(removeSquare);
         } else {
-            emptySquare10x12(to10x12 + Direction.D10X12.N.toInt());
+            int removeSquare = to10x12 + Direction.D10X12.S.toInt();
+            emptySquare10x12(removeSquare);
         }
     }
 
@@ -622,6 +607,8 @@ public class Board {
             return false;
         } else if (!movedPiece.isPawn() && move.isPromotion()) {
             return false;
+        } else if (!movedPiece.isKing() && destinationPiece.getColor() == playerToMove) {
+            return false;
         }
 
 //        int fromRank = from / 8;
@@ -632,7 +619,7 @@ public class Board {
 //        int fileDiff = toFile - fromFile;
 
         return switch (movedPiece.getPieceType()) {
-            case PAWN -> isValidPawnMove(move, movedPiece, destinationPiece, from10x12, to10x12);
+            case PAWN -> isValidPawnMove(move, destinationPiece, from10x12, to10x12);
 //            case KNIGHT -> isValidKnightMove(rankDiff, fileDiff);
 //            case BISHOP -> isValidBishopMove(rankDiff, fileDiff) && isPathClear(from, to);
 //            case ROOK -> isValidRookMove(rankDiff, fileDiff) && isPathClear(from, to);
@@ -642,11 +629,7 @@ public class Board {
         };
     }
 
-    private boolean isValidPawnMove(Move move, Piece movedPiece, Piece destinationPiece, int from10x12, int to10x12) {
-        if (movedPiece.getColor() == destinationPiece.getColor()) {
-            return false;
-        }
-
+    private boolean isValidPawnMove(Move move, Piece destinationPiece, int from10x12, int to10x12) {
         Direction.D10X12 direction = playerToMove.isWhite() ? Direction.D10X12.N : Direction.D10X12.S;
 
         if (move.isDoublePawnPush()) {
@@ -659,9 +642,10 @@ public class Board {
                 return false;
             }
         } else if (move.isEnPassantCapture()) {
-            int frontOfPawn = move.getFrom10x12() + direction.toInt();
-
-            return frontOfPawn + Direction.D10X12.E.toInt() == enPassantSquare10x12 || frontOfPawn + Direction.D10X12.W.toInt() == enPassantSquare10x12;
+            // En passant: pawn must be one rank forward and one file diagonal to the en passant square
+            int oneForward = from10x12 + direction.toInt();
+            return to10x12 == oneForward + Direction.D10X12.E.toInt() && enPassantSquare10x12 == to10x12
+                    || to10x12 == oneForward + Direction.D10X12.W.toInt() && enPassantSquare10x12 == to10x12;
         }
 
         if (move.isPromotion()) {
@@ -672,27 +656,24 @@ public class Board {
             if (toRank != promotionRank) {
                 return false;
             }
-//            if (move.isCapture()) {
-//                return rankDiff == direction && Math.abs(fileDiff) == 1 && !targetPiece.isEmpty();
-//            } else {
-//                return rankDiff == direction && fileDiff == 0 && targetPiece.isEmpty();
-//            }
+            // Check if it's a valid diagonal capture or forward move for promotion
+            if (move.isCapture()) {
+                return to10x12 == from10x12 + direction.toInt() + Direction.D10X12.E.toInt() && !destinationPiece.isEmpty()
+                        || to10x12 == from10x12 + direction.toInt() + Direction.D10X12.W.toInt() && !destinationPiece.isEmpty();
+            } else {
+                return to10x12 == from10x12 + direction.toInt() && destinationPiece.isEmpty();
+            }
         }
 
-//        if (move.isCapture()) {
-//            // Regular pawn capture (non-promotion)
-//            return rankDiff == direction && Math.abs(fileDiff) == 1 && !targetPiece.isEmpty();
-//        }
+        if (move.isCapture()) {
+            // Regular pawn capture (non-promotion)
+            return (to10x12 == from10x12 + direction.toInt() + Direction.D10X12.E.toInt() || to10x12 == from10x12 + direction.toInt() + Direction.D10X12.W.toInt())
+                    && !destinationPiece.isEmpty();
+        }
 
         // Regular pawn move (quiet, non-promotion)
-//        if (fileDiff != 0) {
-//            return false; // Pawns can only move diagonally when capturing
-//        }
-//        if (rankDiff != direction) {
-//            return false; // Pawns move one square forward
-//        }
-//        return targetPiece.isEmpty();
-        return true;
+        // Pawn can only move forward one square on a quiet move
+        return to10x12 == from10x12 + direction.toInt() && destinationPiece.isEmpty();
     }
 
     private boolean isValidKnightMove(int rankDiff, int fileDiff) {
@@ -1290,8 +1271,9 @@ public class Board {
         if (enPassantSquare10x12 == -1) {
             sb.append("- ");
         } else {
-            int file = enPassantSquare10x12 % 8;
-            int rank = enPassantSquare10x12 / 8 + 1;
+            int s8x8 = Util.convert10x12to8x8(enPassantSquare10x12);
+            int file = s8x8 % 8;
+            int rank = s8x8 / 8 + 1;
 
             sb.append(switch (file) {
                 case 0 -> "a" + rank;
