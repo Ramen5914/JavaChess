@@ -623,7 +623,7 @@ public class Board {
 //            case KNIGHT -> isValidKnightMove(rankDiff, fileDiff);
 //            case BISHOP -> isValidBishopMove(rankDiff, fileDiff) && isPathClear(from, to);
 //            case ROOK -> isValidRookMove(rankDiff, fileDiff) && isPathClear(from, to);
-//            case QUEEN -> isValidQueenMove(rankDiff, fileDiff) && isPathClear(from, to);
+            case QUEEN -> isValidQueenMove(move, destinationPiece, from10x12, to10x12);
 //            case KING -> isValidKingMove(move, rankDiff, fileDiff);
             default -> false;
         };
@@ -692,7 +692,7 @@ public class Board {
         return (rankDiff == 0 && fileDiff != 0) || (rankDiff != 0 && fileDiff == 0);
     }
 
-    private boolean isValidQueenMove(int rankDiff, int fileDiff) {
+    private boolean isValidQueenMove(Move move, Piece destinationPiece, int from10x12, int to10x12) {
         return isValidRookMove(rankDiff, fileDiff) || isValidBishopMove(rankDiff, fileDiff);
     }
 
