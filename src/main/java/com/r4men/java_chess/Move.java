@@ -66,7 +66,7 @@ public record Move(int move, int enPassantSquare10x12, int castlingRights, int h
 
     @Override
     public @NotNull String toString() {
-        return String.format("%d -> %d (%d)", getFrom8x8(), getTo8x8(), getFlags());
+        return String.format("%s -> %s (%s)", String.format("%2s", Integer.toHexString(getFrom10x12()).replace(' ', '0')), String.format("%2s", Integer.toHexString(getTo10x12()).replace(' ', '0')), Flag.fromInt(getFlags()));
     }
 
     public int getFrom8x8() {
