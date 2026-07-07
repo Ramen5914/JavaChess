@@ -1,6 +1,9 @@
 package com.r4men.java_chess;
 
 import static org.junit.jupiter.api.Assertions.*;
+
+import com.r4men.java_chess.type.Triple;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -66,13 +69,15 @@ public class UtilTest {
                             int from = (Character.getNumericValue(r1) - 1) * 8 + (f1 - 'a');
                             int to = (Character.getNumericValue(r2) - 1) * 8 + (f2 - 'a');
 
-                            var output = Util.convertUciTo8x8Move(uciMove);
+                            Triple<Integer, Integer, Piece.@Nullable PieceType> output = Util.convertUciTo8x8Move(uciMove);
 
                             assertEquals(from, output.getKey().getKey(), "Failed for uciMove: " + uciMove);
                             assertEquals(to, output.getKey().getValue(), "Failed for uciMove: " + uciMove);
+                            assertEquals(from, output.getFirst(), "Failed for uciMove: " + uciMove);
+                            assertEquals(to, output.getSecond(), "Failed for uciMove: " + uciMove);
 
                             if (p == ' ') {
-                                assertNull(output.getValue(),  "Failed for uciMove: " + uciMove);
+                                assertNull(output.getThird(), "Failed for uciMove: " + uciMove);
                             } else {
                                 Piece.PieceType expected = switch (p) {
                                     case 'q' -> Piece.PieceType.QUEEN;
@@ -82,7 +87,7 @@ public class UtilTest {
                                     default -> throw new IllegalStateException("Unexpected value: " + p);
                                 };
 
-                                assertEquals(expected, output.getValue(),  "Failed for uciMove: " + uciMove);
+                                assertEquals(expected, output.getThird(), "Failed for uciMove: " + uciMove);
                             }
                         }
                     }

@@ -1,6 +1,6 @@
 package com.r4men.java_chess;
 
-import javafx.util.Pair;
+import com.r4men.java_chess.type.Triple;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.regex.Matcher;
@@ -113,10 +113,10 @@ public class Util {
     /**
      * Converts a UCI move string into usable integers and PieceTypes for the Move constructor
      * @param uciMove a string that matches ^([a-hA-H][1-8])([a-hA-H][1-8])([qrbn])?$ regex
-     * @return a pair container a pair of Integers (from8x8, to8x8) and a {@link Piece.PieceType PieceType} for promotion (null if no promotion)
+     * @return a {@link Triple} containing two Integers (from8x8, to8x8) and a {@link Piece.PieceType PieceType} for promotion (null if no promotion)
      * @throws IllegalArgumentException if the uciMove string does not match the regex
      */
-    public static Pair<Pair<Integer, Integer>, Piece.@Nullable PieceType> convertUciTo8x8Move(String uciMove) {
+    public static Triple<Integer, Integer, Piece.@Nullable PieceType> convertUciTo8x8Move(String uciMove) {
         String pattern = "^([a-h][1-8])([a-h][1-8])([qrbn])?$";
         Pattern p = Pattern.compile(pattern);
         Matcher m = p.matcher(uciMove.toLowerCase());
@@ -126,11 +126,9 @@ public class Util {
             char[] toSquare = m.group(2).toCharArray();
             char promotion = m.group(3) == null ? ' ' : m.group(3).charAt(0);
 
-            return new Pair<>(
-                    new Pair<>(
-                            (Character.getNumericValue(fromSquare[1]) - 1) * 8 + (fromSquare[0] - 'a'),
-                            (Character.getNumericValue(toSquare[1]) - 1) * 8 + (toSquare[0] - 'a')
-                    ),
+            return new Triple<>(
+                    (Character.getNumericValue(fromSquare[1]) - 1) * 8 + (fromSquare[0] - 'a'),
+                    (Character.getNumericValue(toSquare[1]) - 1) * 8 + (toSquare[0] - 'a'),
                     switch (promotion) {
                         case 'q' -> Piece.PieceType.QUEEN;
                         case 'r' -> Piece.PieceType.ROOK;

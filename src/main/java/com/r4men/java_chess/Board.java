@@ -1,6 +1,6 @@
 package com.r4men.java_chess;
 
-import javafx.util.Pair;
+import com.r4men.java_chess.type.Triple;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -145,17 +145,17 @@ public class Board {
     }
 
     private Move createMoveFromString(String move) {
-        Pair<Pair<Integer, Integer>, Piece.PieceType> parsed = Util.convertUciTo8x8Move(move);
+        Triple<Integer, Integer, Piece.PieceType> parsed = Util.convertUciTo8x8Move(move);
 
-        int from8x8 = parsed.getKey().getKey();
-        int to8x8 = parsed.getKey().getValue();
+        int from8x8 = parsed.getFirst();
+        int to8x8 = parsed.getSecond();
 
         if (from8x8 == to8x8) {
             return null;
         } else {
             int from10x12 = Util.convert8x8to10x12(from8x8);
             int to10x12 = Util.convert8x8to10x12(to8x8);
-            Piece.PieceType promotionPiece = parsed.getValue();
+            Piece.PieceType promotionPiece = parsed.getThird();
 
             Piece fromPiece = board10x12.get(from10x12);
             Piece toPiece = board10x12.get(to10x12);
