@@ -92,4 +92,24 @@ public class UtilTest {
             }
         }
     }
+
+    @Test
+    void getD10X12FromSquares() {
+        assertEquals(Direction.D10X12.E, Util.getD10X12FromSquares(0, 1));
+        assertEquals(Direction.D10X12.E, Util.getD10X12FromSquares(0, 2));
+        assertEquals(Direction.D10X12.E, Util.getD10X12FromSquares(0, 3));
+        assertEquals(Direction.D10X12.E, Util.getD10X12FromSquares(0, 4));
+        assertEquals(Direction.D10X12.E, Util.getD10X12FromSquares(0, 5));
+        assertEquals(Direction.D10X12.E, Util.getD10X12FromSquares(0, 6));
+        assertEquals(Direction.D10X12.E, Util.getD10X12FromSquares(0, 7));
+        assertEquals(Direction.D10X12.E, Util.getD10X12FromSquares(0, 8));
+        assertEquals(Direction.D10X12.E, Util.getD10X12FromSquares(0, 9));
+
+        assertEquals(Direction.D10X12.N, Util.getD10X12FromSquares(0, 10));
+        assertEquals(Direction.D10X12.NE, Util.getD10X12FromSquares(0, 11));
+        assertEquals(Direction.D10X12.NE, Util.getD10X12FromSquares(0, 12));
+        assertEquals(Direction.D10X12.NE, Util.getD10X12FromSquares(0, 13));
+
+        assertEquals(Direction.D10X12.SW, Util.getD10X12FromSquares(13, 0));
+    }
 }
