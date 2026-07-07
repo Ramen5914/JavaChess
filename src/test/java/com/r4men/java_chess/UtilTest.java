@@ -6,7 +6,6 @@ import com.r4men.java_chess.type.Triple;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
 import java.util.Set;
 
 public class UtilTest {
@@ -71,8 +70,6 @@ public class UtilTest {
 
                             Triple<Integer, Integer, Piece.@Nullable PieceType> output = Util.convertUciTo8x8Move(uciMove);
 
-                            assertEquals(from, output.getKey().getKey(), "Failed for uciMove: " + uciMove);
-                            assertEquals(to, output.getKey().getValue(), "Failed for uciMove: " + uciMove);
                             assertEquals(from, output.getFirst(), "Failed for uciMove: " + uciMove);
                             assertEquals(to, output.getSecond(), "Failed for uciMove: " + uciMove);
 
