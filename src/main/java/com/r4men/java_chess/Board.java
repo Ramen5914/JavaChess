@@ -697,8 +697,22 @@ public class Board {
         }
     }
 
-    private boolean isValidRookMove(int rankDiff, int fileDiff) {
-        return (rankDiff == 0 && fileDiff != 0) || (rankDiff != 0 && fileDiff == 0);
+    private boolean isValidRookMove(Move move, Piece destinationPiece, int from10x12, int to10x12) {
+        Direction.D10X12 direction = Util.getD10X12FromSquares(from10x12, to10x12);
+
+        if (direction == Direction.D10X12.NE || direction == Direction.D10X12.NW || direction == Direction.D10X12.SE || direction == Direction.D10X12.SW) {
+            return false;
+        }
+
+        if (isPathClear10x12(from10x12, to10x12, direction)) {
+            if (move.isCapture() && destinationPiece.getColor() == playerToMove.opposite()) {
+                return true;
+            } else {
+                return destinationPiece.isEmpty();
+            }
+        } else {
+            return false;
+        }
     }
 
     private boolean isValidQueenMove(Move move, Piece destinationPiece, int from10x12, int to10x12) {
