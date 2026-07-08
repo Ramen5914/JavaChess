@@ -716,7 +716,7 @@ public class Board {
     }
 
     private boolean isValidQueenMove(Move move, Piece destinationPiece, int from10x12, int to10x12) {
-        return false;
+        return isValidBishopMove(move, destinationPiece, from10x12, to10x12) || isValidRookMove(move, destinationPiece, from10x12, to10x12);
     }
 
     private boolean isValidKingMove(Move move, int rankDiff, int fileDiff) {
