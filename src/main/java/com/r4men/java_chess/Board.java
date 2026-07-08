@@ -401,7 +401,7 @@ public class Board {
             }
         } else {
             emptySquare10x12(to10x12);
-            setSquare10x12(from10x12, pPiece);
+            setSquare10x12(from10x12, piece);
         }
 
         if (move.isPromotion()) {
