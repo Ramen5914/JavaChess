@@ -1,24 +1,17 @@
 package com.r4men.java_chess;
 
+import java.util.Scanner;
+
 public class JavaChess {
     void main(String[] args) {
-        Board board = new Board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+        Board board = new Board("2b2b1r/3k2pp/1Np5/8/2p5/3PB3/PPP4P/R3K2R b KQ - 1 20");
 
-        board.makeMove("e2e4");
-        board.makeMove("f7f5");
-        board.makeMove("e4e5");
-        board.makeMove("d7d5");
-        board.makeMove("e5d6");
-        board.makeMove("f5f4");
-        board.makeMove("g2g4");
-        board.makeMove("f4g3");
-        board.makeMove("d1f3");
-        board.makeMove("g3f2");
-        board.makeMove("d2d4");
-        board.makeMove("f3f2");
-        board.makeMove("d8d6");
-        board.makeMove("g1f3");
+        board.makeMove("d7c7");
+        board.makeMove("b6c4");
+        board.makeMove("c8a6");
+        board.makeMove("e1a1");
 
         System.out.println(board.ascii8x8());
+        System.out.println(board.toFen());
     }
 }

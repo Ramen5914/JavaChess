@@ -481,23 +481,13 @@ public class Board {
 
     // TODO redo this function
     private boolean isKingInCheck(Piece.Color color) {
-        // Find the king
-        int kingSquare = -1;
-        for (int i = 0; i < 64; i++) {
-            Piece p = board10x12.get(i);
-            if (p.isKing() && p.getColor() == color) {
-                kingSquare = i;
-                break;
-            }
+        int kingSquare = Long.numberOfTrailingZeros(bitBoards[color.ordinal()][Piece.PieceType.KING.ordinal()]);
+
+        if (kingSquare == 64) {
+            throw new IllegalStateException("No king found on board for " + color);
         }
 
-        if (kingSquare == -1) {
-            return false; // King not found (shouldn't happen in valid game)
-        }
-
-        // Check if the king's square is attacked by opponent
-        Piece.Color opponent = color.opposite();
-        return isSquareAttackedBy10x12(kingSquare, opponent);
+        return isSquareAttackedBy10x12(Util.convert8x8to10x12(kingSquare), color.opposite());
     }
 
     // TODO finish logic in this method
