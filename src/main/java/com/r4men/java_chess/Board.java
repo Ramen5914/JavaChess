@@ -719,35 +719,27 @@ public class Board {
         return isValidBishopMove(move, destinationPiece, from10x12, to10x12) || isValidRookMove(move, destinationPiece, from10x12, to10x12);
     }
 
-    private boolean isValidKingMove(Move move, int rankDiff, int fileDiff) {
-        int from = move.getFrom8x8();
-        int to = move.getTo8x8();
-
-        if (move.isKingCastle()) {
-            // Kingside castling - 'to' is the rook's original square
-            // White: king from e1 (4) and rook at h1 (7)
-            // Black: king from e8 (60) and rook at h8 (63)
+    // TODO make sure this works
+    private boolean isValidKingMove(Move move, Piece destinationPiece, int from10x12, int to10x12) {
+        if (move.isQuiet()) {
+            return Util.getDistance10x12(from10x12, to10x12) == 1 && destinationPiece.isEmpty();
+        } else if (move.isCapture()) {
+            return Util.getDistance10x12(from10x12, to10x12) == 1 && destinationPiece.getColor() == playerToMove.opposite();
+        } else if (move.isKingCastle()) {
             if (playerToMove.isWhite()) {
-                return from == 4 && to == 7 && isKingsideCastleLegal();
+                return from10x12 == 0x19 && to10x12 == 0x1C && isKingsideCastleLegal();
             } else {
-                return from == 60 && to == 63 && isKingsideCastleLegal();
+                return from10x12 == 0x5F && to10x12 == 0x62 && isKingsideCastleLegal();
+            }
+        } else if (move.isQueenCastle()) {
+            if (playerToMove.isWhite()) {
+                return from10x12 == 0x19 && to10x12 == 0x15 && isQueensideCastleLegal();
+            } else {
+                return from10x12 == 0x5f && to10x12 == 0x5B && isQueensideCastleLegal();
             }
         }
 
-        if (move.isQueenCastle()) {
-            // Queenside castling - 'to' is the rook's original square
-            // White: king from e1 (4) and rook at a1 (0)
-            // Black: king from e8 (60) and rook at a8 (56)
-            if (playerToMove.isWhite()) {
-                return from == 4 && to == 0 && isQueensideCastleLegal();
-            } else {
-                return from == 60 && to == 56 && isQueensideCastleLegal();
-            }
-        }
-
-        // Regular king move
-        return Math.abs(rankDiff) <= 1 && Math.abs(fileDiff) <= 1 &&
-               (rankDiff != 0 || fileDiff != 0);
+        return false;
     }
 
     private boolean isPathClear10x12(int from, int to, Direction.D10X12 direction) {
