@@ -710,9 +710,9 @@ public class Board {
     // TODO make sure this works
     private boolean isValidKingMove(Move move, Piece destinationPiece, int from10x12, int to10x12) {
         if (move.isQuiet()) {
-            return Util.getDistance10x12(from10x12, to10x12) == 1 && destinationPiece.isEmpty();
+            return Util.getRayDistance10x12(from10x12, to10x12) == 1 && destinationPiece.isEmpty();
         } else if (move.isCapture()) {
-            return Util.getDistance10x12(from10x12, to10x12) == 1 && destinationPiece.getColor() == playerToMove.opposite();
+            return Util.getRayDistance10x12(from10x12, to10x12) == 1 && destinationPiece.getColor() == playerToMove.opposite();
         } else if (move.isKingCastle()) {
             if (playerToMove.isWhite()) {
                 return from10x12 == 0x19 && to10x12 == 0x1C && isKingsideCastleLegal();
