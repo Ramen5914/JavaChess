@@ -522,15 +522,15 @@ public class Board {
         return isSquareAttackedBy10x12(s10x12, defendingColor.opposite());
     }
 
-    private boolean canPieceAttackSquare(int from, int to, Piece piece) {
-        if (from == to) {
+    private boolean canPieceAttackSquare10x12(int from10x12, int to10x12, Piece piece) {
+        if (from10x12 == to10x12) {
             return false;
         }
 
-        int fromRank = from / 8;
-        int fromFile = from % 8;
-        int toRank = to / 8;
-        int toFile = to % 8;
+        int fromRank = from10x12 / 10;
+        int fromFile = from10x12 % 10;
+        int toRank = to10x12 / 10;
+        int toFile = to10x12 % 10;
         int rankDiff = toRank - fromRank;
         int fileDiff = toFile - fromFile;
 
