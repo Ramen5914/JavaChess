@@ -22,20 +22,20 @@ class MoveTest {
 
     @BeforeEach
     void beforeEach() {
-//        move1 = new Move(0, 63, Move.Flag.QUIET_MOVE_FLAG);
-//        move2 = new Move(8, 24, Move.Flag.DOUBLE_PAWN_PUSH_FLAG);
-//        move3 = new Move(4, 7, Move.Flag.KING_CASTLE_FLAG);
-//        move4 = new Move(4, 0, Move.Flag.QUEEN_CASTLE_FLAG);
-//        move5 = new Move(28, 35, Move.Flag.CAPTURES_FLAG);
-//        move6 = new Move(29, 20, Move.Flag.EN_PASSANT_CAPTURE_FLAG);
-//        move7 = new Move(48, 56, Move.Flag.KNIGHT_PROMOTION_FLAG);
-//        move8 = new Move(49, 57, Move.Flag.BISHOP_PROMOTION_FLAG);
-//        move9 = new Move(50, 58, Move.Flag.ROOK_PROMOTION_FLAG);
-//        move10 = new Move(51, 59, Move.Flag.QUEEN_PROMOTION_FLAG);
-//        move11 = new Move(51, 60, Move.Flag.KNIGHT_PROMOTION_CAPTURE_FLAG);
-//        move12 = new Move(52, 61, Move.Flag.BISHOP_PROMOTION_CAPTURE_FLAG);
-//        move13 = new Move(53, 62, Move.Flag.ROOK_PROMOTION_CAPTURE_FLAG);
-//        move14 = new Move(54, 63, Move.Flag.QUEEN_PROMOTION_CAPTURE_FLAG);
+        move1 = new Move(0, 63, Move.Flag.QUIET_MOVE_FLAG, -1, 0b1111, 0, null);
+        move2 = new Move(8, 24, Move.Flag.DOUBLE_PAWN_PUSH_FLAG, -1, 0b1111, 0, null);
+        move3 = new Move(4, 7, Move.Flag.KING_CASTLE_FLAG, -1, 0b1111, 0, null);
+        move4 = new Move(4, 0, Move.Flag.QUEEN_CASTLE_FLAG, -1, 0b1111, 0, null);
+        move5 = new Move(28, 35, Move.Flag.CAPTURES_FLAG, -1, 0b1111, 0, null);
+        move6 = new Move(29, 20, Move.Flag.EN_PASSANT_CAPTURE_FLAG, -1, 0b1111, 0, null);
+        move7 = new Move(48, 56, Move.Flag.KNIGHT_PROMOTION_FLAG, -1, 0b1111, 0, null);
+        move8 = new Move(49, 57, Move.Flag.BISHOP_PROMOTION_FLAG, -1, 0b1111, 0, null);
+        move9 = new Move(50, 58, Move.Flag.ROOK_PROMOTION_FLAG, -1, 0b1111, 0, null);
+        move10 = new Move(51, 59, Move.Flag.QUEEN_PROMOTION_FLAG, -1, 0b1111, 0, null);
+        move11 = new Move(51, 60, Move.Flag.KNIGHT_PROMOTION_CAPTURE_FLAG, -1, 0b1111, 0, null);
+        move12 = new Move(52, 61, Move.Flag.BISHOP_PROMOTION_CAPTURE_FLAG, -1, 0b1111, 0, null);
+        move13 = new Move(53, 62, Move.Flag.ROOK_PROMOTION_CAPTURE_FLAG, -1, 0b1111, 0, null);
+        move14 = new Move(54, 63, Move.Flag.QUEEN_PROMOTION_CAPTURE_FLAG, -1, 0b1111, 0, null);
     }
 
     @Test
@@ -76,20 +76,20 @@ class MoveTest {
 
     @Test
     void getFlags() {
-        assertEquals(Move.Flag.QUIET_MOVE_FLAG, move1.getFlags());
-        assertEquals(Move.Flag.DOUBLE_PAWN_PUSH_FLAG, move2.getFlags());
-        assertEquals(Move.Flag.KING_CASTLE_FLAG, move3.getFlags());
-        assertEquals(Move.Flag.QUEEN_CASTLE_FLAG, move4.getFlags());
-        assertEquals(Move.Flag.CAPTURES_FLAG, move5.getFlags());
-        assertEquals(Move.Flag.EN_PASSANT_CAPTURE_FLAG, move6.getFlags());
-        assertEquals(Move.Flag.KNIGHT_PROMOTION_FLAG, move7.getFlags());
-        assertEquals(Move.Flag.BISHOP_PROMOTION_FLAG, move8.getFlags());
-        assertEquals(Move.Flag.ROOK_PROMOTION_FLAG, move9.getFlags());
-        assertEquals(Move.Flag.QUEEN_PROMOTION_FLAG, move10.getFlags());
-        assertEquals(Move.Flag.KNIGHT_PROMOTION_CAPTURE_FLAG, move11.getFlags());
-        assertEquals(Move.Flag.BISHOP_PROMOTION_CAPTURE_FLAG, move12.getFlags());
-        assertEquals(Move.Flag.ROOK_PROMOTION_CAPTURE_FLAG, move13.getFlags());
-        assertEquals(Move.Flag.QUEEN_PROMOTION_CAPTURE_FLAG, move14.getFlags());
+        assertEquals(Move.Flag.QUIET_MOVE_FLAG.toInt(), move1.getFlags());
+        assertEquals(Move.Flag.DOUBLE_PAWN_PUSH_FLAG.toInt(), move2.getFlags());
+        assertEquals(Move.Flag.KING_CASTLE_FLAG.toInt(), move3.getFlags());
+        assertEquals(Move.Flag.QUEEN_CASTLE_FLAG.toInt(), move4.getFlags());
+        assertEquals(Move.Flag.CAPTURES_FLAG.toInt(), move5.getFlags());
+        assertEquals(Move.Flag.EN_PASSANT_CAPTURE_FLAG.toInt(), move6.getFlags());
+        assertEquals(Move.Flag.KNIGHT_PROMOTION_FLAG.toInt(), move7.getFlags());
+        assertEquals(Move.Flag.BISHOP_PROMOTION_FLAG.toInt(), move8.getFlags());
+        assertEquals(Move.Flag.ROOK_PROMOTION_FLAG.toInt(), move9.getFlags());
+        assertEquals(Move.Flag.QUEEN_PROMOTION_FLAG.toInt(), move10.getFlags());
+        assertEquals(Move.Flag.KNIGHT_PROMOTION_CAPTURE_FLAG.toInt(), move11.getFlags());
+        assertEquals(Move.Flag.BISHOP_PROMOTION_CAPTURE_FLAG.toInt(), move12.getFlags());
+        assertEquals(Move.Flag.ROOK_PROMOTION_CAPTURE_FLAG.toInt(), move13.getFlags());
+        assertEquals(Move.Flag.QUEEN_PROMOTION_CAPTURE_FLAG.toInt(), move14.getFlags());
     }
 
     @Test
