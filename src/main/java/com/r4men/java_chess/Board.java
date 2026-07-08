@@ -637,11 +637,10 @@ public class Board {
             int toRank = to10x12 / 10 - 1;
             int promotionRank = playerToMove.isWhite() ? 8 : 1;
 
-            // Pawn promotion (only on last rank)
             if (toRank != promotionRank) {
                 return false;
             }
-            // Check if it's a valid diagonal capture or forward move for promotion
+
             if (move.isCapture()) {
                 return to10x12 == from10x12 + direction.toInt() + Direction.D10X12.E.toInt() && !destinationPiece.isEmpty()
                         || to10x12 == from10x12 + direction.toInt() + Direction.D10X12.W.toInt() && !destinationPiece.isEmpty();
