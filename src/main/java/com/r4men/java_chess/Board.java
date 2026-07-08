@@ -473,7 +473,7 @@ public class Board {
 
     private boolean wouldBeInCheckAfterMove(Move move) {
         makeMove(move, true);
-        boolean toReturn = isKingInCheck(playerToMove);
+        boolean toReturn = isKingInCheck(playerToMove.opposite());
         undoMove(move);
 
         return toReturn;
