@@ -1,12 +1,12 @@
 package com.r4men.java_chess;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import com.r4men.java_chess.type.Triple;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import java.util.Set;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class UtilTest {
     @Test

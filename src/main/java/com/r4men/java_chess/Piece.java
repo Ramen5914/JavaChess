@@ -22,43 +22,6 @@ public class Piece {
     private final Color color;
     private final char pieceChar;
 
-    public enum PieceType {
-        BISHOP,
-        KING,
-        KNIGHT,
-        PAWN,
-        QUEEN,
-        ROOK,
-        OCC,
-        EMPTY,
-        OFF_BOARD;
-    }
-
-    public enum Color {
-        WHITE,
-        BLACK,
-        EMPTY,
-        OFF_BOARD;
-
-        public boolean isWhite() {
-            return this == WHITE;
-        }
-
-        public boolean isBlack() {
-            return this == BLACK;
-        }
-
-        public Color opposite() {
-            if (this == WHITE) {
-                return BLACK;
-            } else if (this == BLACK) {
-                return WHITE;
-            } else {
-                return EMPTY;
-            }
-        }
-    }
-
     private Piece(PieceType pieceType, Color color, char pieceChar) {
         this.pieceType = pieceType;
         this.color = color;
@@ -69,15 +32,6 @@ public class Piece {
         this.pieceType = PieceType.EMPTY;
         this.color = Color.EMPTY;
         this.pieceChar = ' ';
-    }
-
-    @Override
-    public String toString() {
-        return String.valueOf(this.pieceChar);
-    }
-
-    public PieceType getPieceType() {
-        return pieceType;
     }
 
     public static Piece fromChar(char c) {
@@ -97,6 +51,15 @@ public class Piece {
             case ' ' -> EMPTY;
             default -> throw new IllegalArgumentException("Illegal piece character " + c);
         };
+    }
+
+    @Override
+    public String toString() {
+        return String.valueOf(this.pieceChar);
+    }
+
+    public PieceType getPieceType() {
+        return pieceType;
     }
 
     public Color getColor() {
@@ -149,5 +112,42 @@ public class Piece {
 
     public boolean isRook() {
         return pieceType == PieceType.ROOK;
+    }
+
+    public enum PieceType {
+        BISHOP,
+        KING,
+        KNIGHT,
+        PAWN,
+        QUEEN,
+        ROOK,
+        OCC,
+        EMPTY,
+        OFF_BOARD
+    }
+
+    public enum Color {
+        WHITE,
+        BLACK,
+        EMPTY,
+        OFF_BOARD;
+
+        public boolean isWhite() {
+            return this == WHITE;
+        }
+
+        public boolean isBlack() {
+            return this == BLACK;
+        }
+
+        public Color opposite() {
+            if (this == WHITE) {
+                return BLACK;
+            } else if (this == BLACK) {
+                return WHITE;
+            } else {
+                return EMPTY;
+            }
+        }
     }
 }

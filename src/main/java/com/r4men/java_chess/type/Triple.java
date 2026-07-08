@@ -5,6 +5,14 @@ import java.util.Objects;
 
 public class Triple<A, B, C> implements Serializable {
     private A first;
+    private B second;
+    private C third;
+
+    public Triple(A first, B second, C third) {
+        this.first = first;
+        this.second = second;
+        this.third = third;
+    }
 
     public A getFirst() {
         return first;
@@ -14,8 +22,6 @@ public class Triple<A, B, C> implements Serializable {
         this.first = first;
     }
 
-    private B second;
-
     public B getSecond() {
         return second;
     }
@@ -24,19 +30,11 @@ public class Triple<A, B, C> implements Serializable {
         this.second = second;
     }
 
-    private C third;
-
     public C getThird() {
         return third;
     }
 
     public void setThird(C third) {
-        this.third = third;
-    }
-
-    public Triple(A first, B second, C third) {
-        this.first = first;
-        this.second = second;
         this.third = third;
     }
 

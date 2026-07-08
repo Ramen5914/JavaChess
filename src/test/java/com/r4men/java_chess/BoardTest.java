@@ -1,8 +1,6 @@
 package com.r4men.java_chess;
 
-import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class BoardTest {
     Board initial = new Board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
@@ -47,7 +45,7 @@ class BoardTest {
         assertEquals(193690690, kiwipete.fastPerft(5));
     }
 
-//    @Test
+    //    @Test
     void pos3() {
         assertEquals(14, pos3.perft(1));
         assertEquals(191, pos3.perft(2));
@@ -58,7 +56,7 @@ class BoardTest {
         assertEquals(178633661, pos3.perft(7));
     }
 
-//    @Test
+    //    @Test
     void pos4() {
         assertEquals(6, pos4.perft(1));
         assertEquals(264, pos4.perft(2));

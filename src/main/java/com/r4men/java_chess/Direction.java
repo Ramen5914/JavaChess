@@ -2,6 +2,7 @@ package com.r4men.java_chess;
 
 public interface Direction {
     int toInt();
+
     Direction opposite();
 
     enum D10X12 implements Direction {

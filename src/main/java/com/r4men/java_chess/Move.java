@@ -2,46 +2,8 @@ package com.r4men.java_chess;
 
 import org.jetbrains.annotations.NotNull;
 
-public record Move(int move, int enPassantSquare10x12, int castlingRights, int halfmoveClock, @NotNull Piece capturedPiece) {
-    public enum Flag {
-        QUIET_MOVE_FLAG(0b0000),
-        DOUBLE_PAWN_PUSH_FLAG(0b0001),
-        KING_CASTLE_FLAG(0b0010),
-        QUEEN_CASTLE_FLAG(0b0011),
-        CAPTURES_FLAG(0b0100),
-        EN_PASSANT_CAPTURE_FLAG(0b0101),
-        KNIGHT_PROMOTION_FLAG(0b1000),
-        BISHOP_PROMOTION_FLAG(0b1001),
-        ROOK_PROMOTION_FLAG(0b1010),
-        QUEEN_PROMOTION_FLAG(0b1011),
-        KNIGHT_PROMOTION_CAPTURE_FLAG(0b1100),
-        BISHOP_PROMOTION_CAPTURE_FLAG(0b1101),
-        ROOK_PROMOTION_CAPTURE_FLAG(0b1110),
-        QUEEN_PROMOTION_CAPTURE_FLAG(0b1111);
-
-        private final int flag;
-
-        Flag(int flag) {
-            this.flag = flag;
-        }
-
-        public int toInt() {
-            return flag;
-        }
-
-        public static Flag fromInt(int flag) {
-            if (flag >= 0 && flag <= 15) {
-                for (Flag f : Flag.values()) {
-                    if (f.flag == flag) {
-                        return f;
-                    }
-                }
-            }
-
-            throw new IllegalArgumentException("Invalid flag value: " + flag);
-        }
-    }
-
+public record Move(int move, int enPassantSquare10x12, int castlingRights, int halfmoveClock,
+                   @NotNull Piece capturedPiece) {
     public Move(int from8x8, int to8x8, Flag flag, int enPassantSquare10x12, int castlingRights, int halfmoveClock, Piece capturedPiece) {
         if (from8x8 >= 64 || from8x8 < 0) {
             throw new IllegalArgumentException("'from8x8' square must be in the range [0, 64). Received: " + from8x8);
@@ -171,5 +133,44 @@ public record Move(int move, int enPassantSquare10x12, int castlingRights, int h
     @Override
     public int hashCode() {
         return move & 0xffff;
+    }
+
+    public enum Flag {
+        QUIET_MOVE_FLAG(0b0000),
+        DOUBLE_PAWN_PUSH_FLAG(0b0001),
+        KING_CASTLE_FLAG(0b0010),
+        QUEEN_CASTLE_FLAG(0b0011),
+        CAPTURES_FLAG(0b0100),
+        EN_PASSANT_CAPTURE_FLAG(0b0101),
+        KNIGHT_PROMOTION_FLAG(0b1000),
+        BISHOP_PROMOTION_FLAG(0b1001),
+        ROOK_PROMOTION_FLAG(0b1010),
+        QUEEN_PROMOTION_FLAG(0b1011),
+        KNIGHT_PROMOTION_CAPTURE_FLAG(0b1100),
+        BISHOP_PROMOTION_CAPTURE_FLAG(0b1101),
+        ROOK_PROMOTION_CAPTURE_FLAG(0b1110),
+        QUEEN_PROMOTION_CAPTURE_FLAG(0b1111);
+
+        private final int flag;
+
+        Flag(int flag) {
+            this.flag = flag;
+        }
+
+        public static Flag fromInt(int flag) {
+            if (flag >= 0 && flag <= 15) {
+                for (Flag f : Flag.values()) {
+                    if (f.flag == flag) {
+                        return f;
+                    }
+                }
+            }
+
+            throw new IllegalArgumentException("Invalid flag value: " + flag);
+        }
+
+        public int toInt() {
+            return flag;
+        }
     }
 }

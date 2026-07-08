@@ -1,7 +1,5 @@
 package com.r4men.java_chess;
 
-import java.util.Scanner;
-
 public class JavaChess {
     void main(String[] args) {
         Board board = new Board("2b2b1r/3k2pp/1Np5/8/2p5/3PB3/PPP4P/R3K2R b KQ - 1 20");
