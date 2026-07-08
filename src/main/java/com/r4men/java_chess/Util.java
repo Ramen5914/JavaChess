@@ -148,7 +148,7 @@ public class Util {
 
     /**
      * Makes sure a bitboard has exactly 1 piece on it
-     * @param bb 64 bit long bitboard
+     * @param bb 64-bit long bitboard
      * @return true if the long has only 1 bit set, false otherwise
      */
     public static boolean hasOnlyOnePiece(long bb) {
