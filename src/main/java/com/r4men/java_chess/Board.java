@@ -191,7 +191,8 @@ public class Board {
                                 case BISHOP -> Move.Flag.BISHOP_PROMOTION_CAPTURE_FLAG;
                                 case ROOK -> Move.Flag.ROOK_PROMOTION_CAPTURE_FLAG;
                                 case QUEEN -> Move.Flag.QUEEN_PROMOTION_CAPTURE_FLAG;
-                                default -> throw new IllegalArgumentException("Invalid promotion piece: " + promotionPiece);
+                                default ->
+                                        throw new IllegalArgumentException("Invalid promotion piece: " + promotionPiece);
                             };
                         } else {
                             flag = Move.Flag.CAPTURES_FLAG;
@@ -318,6 +319,7 @@ public class Board {
     }
 
     // TODO make real javadoc
+
     /**
      * blah blah blah
      * <p>
@@ -364,7 +366,8 @@ public class Board {
                 switch (pPlayerToMove) {
                     case WHITE -> setSquare10x12(to10x12 - 10, Piece.BLACK_PAWN);
                     case BLACK -> setSquare10x12(to10x12 + 10, Piece.WHITE_PAWN);
-                    default -> throw new IllegalStateException("Previous playerToMove is neither WHITE nor BLACK: " + pPlayerToMove);
+                    default ->
+                            throw new IllegalStateException("Previous playerToMove is neither WHITE nor BLACK: " + pPlayerToMove);
                 }
             }
         } else if (move.isCastle()) {
@@ -397,7 +400,8 @@ public class Board {
                         emptySquare10x12(0x5E);
                     }
                 }
-                default -> throw new IllegalStateException("Previous playerToMove is neither WHITE nor BLACK: " + pPlayerToMove);
+                default ->
+                        throw new IllegalStateException("Previous playerToMove is neither WHITE nor BLACK: " + pPlayerToMove);
             }
         } else {
             emptySquare10x12(to10x12);
@@ -408,14 +412,15 @@ public class Board {
             setSquare10x12(from10x12, switch (pPlayerToMove) {
                 case WHITE -> Piece.WHITE_PAWN;
                 case BLACK -> Piece.BLACK_PAWN;
-                default -> throw new IllegalStateException("Previous playerToMove is neither WHITE nor BLACK: " + pPlayerToMove);
+                default ->
+                        throw new IllegalStateException("Previous playerToMove is neither WHITE nor BLACK: " + pPlayerToMove);
             });
         }
 
         playerToMove = pPlayerToMove;
         halfmoveClock = move.halfmoveClock();
         castlingRights = move.castlingRights();
-        enPassantSquare10x12 = move.enPassantSquare10x12();;
+        enPassantSquare10x12 = move.enPassantSquare10x12();
         if (playerToMove.isBlack()) {
             fullmoveNumber--;
         }
@@ -750,12 +755,12 @@ public class Board {
         if (playerToMove.isWhite()) {
             return (
                     (castlingRights & 0b1) == 1 &&
-                    isPathClear10x12(0x19, 0x1C, Direction.D10X12.E) &&
-                    (
-                            !isSquareUnderAttack10x12(0x19, playerToMove) &&
-                            !isSquareUnderAttack10x12(0x1A, playerToMove) &&
-                            !isSquareUnderAttack10x12(0x1B, playerToMove)
-                    )
+                            isPathClear10x12(0x19, 0x1C, Direction.D10X12.E) &&
+                            (
+                                    !isSquareUnderAttack10x12(0x19, playerToMove) &&
+                                            !isSquareUnderAttack10x12(0x1A, playerToMove) &&
+                                            !isSquareUnderAttack10x12(0x1B, playerToMove)
+                            )
             );
         } else {
             // TODO implement black king side castling
@@ -877,10 +882,10 @@ public class Board {
             if (toRank + direction == promotionRank) {
                 // Promotion moves
                 for (Move.Flag promFlag : new Move.Flag[]{
-                    Move.Flag.KNIGHT_PROMOTION_FLAG,
-                    Move.Flag.BISHOP_PROMOTION_FLAG,
-                    Move.Flag.ROOK_PROMOTION_FLAG,
-                    Move.Flag.QUEEN_PROMOTION_FLAG
+                        Move.Flag.KNIGHT_PROMOTION_FLAG,
+                        Move.Flag.BISHOP_PROMOTION_FLAG,
+                        Move.Flag.ROOK_PROMOTION_FLAG,
+                        Move.Flag.QUEEN_PROMOTION_FLAG
                 }) {
                     Move move = new Move(from, forwardSquare, promFlag, enPassantSquare10x12, castlingRights, halfmoveClock, null);
                     if (isMoveValid(move)) {
@@ -920,10 +925,10 @@ public class Board {
                     if (toRank + direction == promotionRank) {
                         // Promotion captures
                         for (Move.Flag promFlag : new Move.Flag[]{
-                            Move.Flag.KNIGHT_PROMOTION_CAPTURE_FLAG,
-                            Move.Flag.BISHOP_PROMOTION_CAPTURE_FLAG,
-                            Move.Flag.ROOK_PROMOTION_CAPTURE_FLAG,
-                            Move.Flag.QUEEN_PROMOTION_CAPTURE_FLAG
+                                Move.Flag.KNIGHT_PROMOTION_CAPTURE_FLAG,
+                                Move.Flag.BISHOP_PROMOTION_CAPTURE_FLAG,
+                                Move.Flag.ROOK_PROMOTION_CAPTURE_FLAG,
+                                Move.Flag.QUEEN_PROMOTION_CAPTURE_FLAG
                         }) {
                             Move move = new Move(from, captureSquare, promFlag, enPassantSquare10x12, castlingRights, halfmoveClock, target);
                             if (isMoveValid(move)) {
@@ -952,8 +957,8 @@ public class Board {
 
     private int generateKnightMoves(int from, Move[] moveList, int moveCount) {
         int[][] knightOffsets = {
-            {-2, -1}, {-2, 1}, {-1, -2}, {-1, 2},
-            {1, -2}, {1, 2}, {2, -1}, {2, 1}
+                {-2, -1}, {-2, 1}, {-1, -2}, {-1, 2},
+                {1, -2}, {1, 2}, {2, -1}, {2, 1}
         };
 
         for (int[] offset : knightOffsets) {
@@ -1032,9 +1037,9 @@ public class Board {
 
     private int generateKingMoves(int from, Move[] moveList, int moveCount) {
         int[][] kingOffsets = {
-            {-1, -1}, {-1, 0}, {-1, 1},
-            {0, -1}, {0, 1},
-            {1, -1}, {1, 0}, {1, 1}
+                {-1, -1}, {-1, 0}, {-1, 1},
+                {0, -1}, {0, 1},
+                {1, -1}, {1, 0}, {1, 1}
         };
 
         // Regular king moves
@@ -1178,7 +1183,7 @@ public class Board {
             }
 
             for (int x = 0; x < 10; x++) {
-                sb.append(board10x12.get(y*10 + x)).append(" | ");
+                sb.append(board10x12.get(y * 10 + x)).append(" | ");
             }
 
             if (y > 9 || y < 2) {
@@ -1312,7 +1317,7 @@ public class Board {
 
         long bb = bitBoards[color.ordinal()][piece.ordinal()];
         for (int y = 7; y >= 0; y--) {
-            long select =  0b11111111L << (y * 8);
+            long select = 0b11111111L << (y * 8);
             long row = (bb & select) >>> (y * 8);
 
             String corrected = new StringBuilder(String.format("%8s", Long.toBinaryString(row)).replace(' ', '0')).reverse().toString();
