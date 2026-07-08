@@ -534,35 +534,31 @@ public class Board {
         int rankDiff = toRank - fromRank;
         int fileDiff = toFile - fromFile;
 
-        switch (piece.getPieceType()) {
-//            case PAWN:
-//                // Pawns attack diagonally one square forward
-//                int direction = piece.isWhite() ? 1 : -1;
-//                return rankDiff == direction && Math.abs(fileDiff) == 1;
-//
-//            case KNIGHT:
-//                // Knight moves in L-shape
-//                int absDiff = Math.abs(rankDiff) + Math.abs(fileDiff);
-//                return absDiff == 3 && Math.abs(rankDiff) != 0 && Math.abs(fileDiff) != 0;
-//
-//            case BISHOP:
-//                // Bishop moves diagonally
-//                return Math.abs(rankDiff) == Math.abs(fileDiff) && rankDiff != 0 && isPathClear(from, to);
-//
-//            case ROOK:
-//                // Rook moves horizontally or vertically
-//                return ((rankDiff == 0 && fileDiff != 0) || (rankDiff != 0 && fileDiff == 0)) && isPathClear(from, to);
-//
-//            case QUEEN:
-//                // Queen moves like rook or bishop
-//                boolean isRookMove = (rankDiff == 0 && fileDiff != 0) || (rankDiff != 0 && fileDiff == 0);
-//                boolean isBishopMove = Math.abs(rankDiff) == Math.abs(fileDiff) && rankDiff != 0;
-//                return (isRookMove || isBishopMove) && isPathClear(from, to);
-//
-//            case KING:
-//                // King moves one square in any direction
-//                return Math.abs(rankDiff) <= 1 && Math.abs(fileDiff) <= 1 && (rankDiff != 0 || fileDiff != 0);
+        Direction.D10X12 directionD = Util.getD10X12FromSquares(from10x12, to10x12);
 
+        switch (piece.getPieceType()) {
+            case PAWN:
+                // Pawns attack diagonally one square forward
+                int direction = piece.isWhite() ? 1 : -1;
+                return rankDiff == direction && Math.abs(fileDiff) == 1;
+            case KNIGHT:
+                // Knight moves in L-shape
+                int absDiff = Math.abs(rankDiff) + Math.abs(fileDiff);
+                return absDiff == 3 && Math.abs(rankDiff) != 0 && Math.abs(fileDiff) != 0;
+            case BISHOP:
+                // Bishop moves diagonally
+                return Math.abs(rankDiff) == Math.abs(fileDiff) && rankDiff != 0 && isPathClear10x12(from10x12, to10x12, directionD);
+            case ROOK:
+                // Rook moves horizontally or vertically
+                return ((rankDiff == 0 && fileDiff != 0) || (rankDiff != 0 && fileDiff == 0)) && isPathClear10x12(from10x12, to10x12, directionD);
+            case QUEEN:
+                // Queen moves like rook or bishop
+                boolean isRookMove = (rankDiff == 0 && fileDiff != 0) || (rankDiff != 0 && fileDiff == 0);
+                boolean isBishopMove = Math.abs(rankDiff) == Math.abs(fileDiff) && rankDiff != 0;
+                return (isRookMove || isBishopMove) && isPathClear10x12(from10x12, to10x12, directionD);
+            case KING:
+                // King moves one square in any direction
+                return Math.abs(rankDiff) <= 1 && Math.abs(fileDiff) <= 1 && (rankDiff != 0 || fileDiff != 0);
             default:
                 return false;
         }
