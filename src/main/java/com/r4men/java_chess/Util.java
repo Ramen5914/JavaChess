@@ -34,7 +34,7 @@ public class Util {
 
     public static int convert10x12to8x8(int s10x12) {
         if (s10x12 % 10 == 0 || s10x12 % 10 == 9 || s10x12 <= 0x14 || s10x12 >= 0x63) {
-            throw new  IllegalArgumentException("Invalid 10x12 square (Off-Board on 8x8): " + String.format("0x%2s", Integer.toHexString(s10x12).toUpperCase()).replace(' ', '0'));
+            throw new IllegalArgumentException("Invalid 10x12 square (Off-Board on 8x8): " + String.format("0x%2s", Integer.toHexString(s10x12).toUpperCase()).replace(' ', '0'));
         }
 
         int rank = (s10x12 - 0x15) / 10;
@@ -51,12 +51,10 @@ public class Util {
      * The method steps from {@code from} toward {@code to} one square at a time until
      * it either reaches {@code to} or leaves the board.</p>
      *
-     * @param from the starting square index in 10x12 representation
-     * @param to the target square index in 10x12 representation
+     * @param from      the starting square index in 10x12 representation
+     * @param to        the target square index in 10x12 representation
      * @param direction the ray direction to check
-     *
      * @return {@code true} if {@code to} lies on the specified ray from {@code from}; {@code false} otherwise
-     *
      * @throws IllegalArgumentException if either {@code from} or {@code to} are not in the range [0, 120)
      */
     public static boolean isRayFrom10x12(int from, int to, Direction.D10X12 direction) {
@@ -91,7 +89,7 @@ public class Util {
 
     public static int convert8x8to10x12(int s8x8) {
         if (s8x8 < 0 || s8x8 >= 64) {
-            throw new  IllegalArgumentException("Invalid 8x8 square (Off-Board on 8x8): " + s8x8);
+            throw new IllegalArgumentException("Invalid 8x8 square (Off-Board on 8x8): " + s8x8);
         }
 
         int file = (s8x8 % 8) + 1;
@@ -112,6 +110,7 @@ public class Util {
 
     /**
      * Converts a UCI move string into usable integers and PieceTypes for the Move constructor
+     *
      * @param uciMove a string that matches ^([a-hA-H][1-8])([a-hA-H][1-8])([qrbn])?$ regex
      * @return a {@link Triple} containing two Integers (from8x8, to8x8) and a {@link Piece.PieceType PieceType} for promotion (null if no promotion)
      * @throws IllegalArgumentException if the uciMove string does not match the regex
@@ -148,6 +147,7 @@ public class Util {
 
     /**
      * Makes sure a bitboard has exactly 1 piece on it
+     *
      * @param bb 64-bit long bitboard
      * @return true if the long has only 1 bit set, false otherwise
      */
