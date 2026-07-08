@@ -605,7 +605,7 @@ public class Board {
 
         return switch (movedPiece.getPieceType()) {
             case PAWN -> isValidPawnMove(move, destinationPiece, from10x12, to10x12);
-//            case KNIGHT -> isValidKnightMove(move, destinationPiece, from10x12, to10x12);
+            case KNIGHT -> isValidKnightMove(move, destinationPiece, from10x12, to10x12);
             case BISHOP -> isValidBishopMove(move, destinationPiece, from10x12, to10x12);
             case ROOK -> isValidRookMove(move, destinationPiece, from10x12, to10x12);
             case QUEEN -> isValidQueenMove(move, destinationPiece, from10x12, to10x12);
@@ -660,12 +660,11 @@ public class Board {
         return to10x12 == from10x12 + direction.toInt() && destinationPiece.isEmpty();
     }
 
-    private boolean isValidKnightMove(int rankDiff, int fileDiff) {
-        int absDiff = Math.abs(rankDiff) + Math.abs(fileDiff);
-        if (absDiff != 3) {
-            return false;
-        }
-        return Math.abs(rankDiff) != 0 && Math.abs(fileDiff) != 0;
+    private boolean isValidKnightMove(Move move, Piece destinationPiece, int from10x12, int to10x12) {
+        int rankDiff = Util.getRankDistance10x12(from10x12, to10x12);
+        int fileDiff = Util.getFileDistance10x12(from10x12, to10x12);
+
+        return rankDiff > 0 && fileDiff > 0 && rankDiff + fileDiff == 3;
     }
 
     private boolean isValidBishopMove(Move move, Piece destinationPiece, int from10x12, int to10x12) {
