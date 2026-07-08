@@ -180,4 +180,19 @@ public class Util {
         }
     }
 
+    public static int getDistance10x12(int from10x12, int to10x12) {
+        Direction.D10X12 direction = getD10X12FromSquares(from10x12, to10x12);
+
+        if (isRayFrom10x12(from10x12, to10x12, direction)) {
+            int x1 = from10x12 % 10;
+            int y1 = from10x12 / 10;
+            int x2 = to10x12 % 10;
+            int y2 = to10x12 / 10;
+
+            return Math.max(Math.abs(x2 - x1), Math.abs(y2 - y1));
+        } else {
+            throw new IllegalArgumentException("Squares are not on a ray.");
+        }
+
+    }
 }
