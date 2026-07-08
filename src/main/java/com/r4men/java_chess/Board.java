@@ -615,11 +615,11 @@ public class Board {
 
         return switch (movedPiece.getPieceType()) {
             case PAWN -> isValidPawnMove(move, destinationPiece, from10x12, to10x12);
-//            case KNIGHT -> isValidKnightMove(rankDiff, fileDiff);
-//            case BISHOP -> isValidBishopMove(rankDiff, fileDiff) && isPathClear(from, to);
-//            case ROOK -> isValidRookMove(rankDiff, fileDiff) && isPathClear(from, to);
+//            case KNIGHT -> isValidKnightMove(move, destinationPiece, from10x12, to10x12);
+            case BISHOP -> isValidBishopMove(move, destinationPiece, from10x12, to10x12);
+            case ROOK -> isValidRookMove(move, destinationPiece, from10x12, to10x12);
             case QUEEN -> isValidQueenMove(move, destinationPiece, from10x12, to10x12);
-//            case KING -> isValidKingMove(move, rankDiff, fileDiff);
+            case KING -> isValidKingMove(move, destinationPiece, from10x12, to10x12);
             default -> false;
         };
     }
