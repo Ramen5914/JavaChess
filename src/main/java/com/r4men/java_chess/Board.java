@@ -497,21 +497,21 @@ public class Board {
 
         // Check if the king's square is attacked by opponent
         Piece.Color opponent = color.opposite();
-        return isSquareAttackedBy(kingSquare, opponent);
+        return isSquareAttackedBy10x12(kingSquare, opponent);
     }
 
-    private boolean isSquareAttackedBy(int square, Piece.Color attackingColor) {
-        // Check if any piece of the attacking color can attack this square
-        for (int i = 0; i < 64; i++) {
-            Piece attacker = board10x12.get(i);
+    // TODO finish logic in this method
+    private boolean isSquareAttackedBy10x12(int s10x12, Piece.Color attackingColor) {
+        long occBB = bitBoards[attackingColor.ordinal()][Piece.PieceType.OCC.ordinal()];
 
-            if (attacker.isEmpty() || attacker.getColor() != attackingColor) {
-                continue;
-            }
+        for (int s8x8 = 0; s8x8 < 64; s8x8++) {
+            if (((occBB >>> s8x8) & 0b1) == 1) {
+                int from10x12 = Util.convert8x8to10x12(s8x8);
+                Piece piece = board10x12.get(from10x12);
 
-            // Check if this piece can attack the target square
-            if (canPieceAttackSquare(i, square, attacker)) {
-                return true;
+                if (canPieceAttackSquare10x12(from10x12, s10x12, piece)) {
+                    return true;
+                }
             }
         }
 
