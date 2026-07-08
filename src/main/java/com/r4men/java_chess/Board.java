@@ -1338,4 +1338,25 @@ public class Board {
 
         return sb.toString();
     }
+
+    public String ascii8x8() {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("    A   B   C   D   E   F   G   H\n");
+        sb.append("  +---+---+---+---+---+---+---+---+\n");
+        for (int y = 7; y >= 0; y--) {
+            sb.append(y + 1).append(" | ");
+
+            for (int x = 0; x < 8; x++) {
+                sb.append(board10x12.get(10 * (y + 2) + (x + 1))).append(" | ");
+            }
+
+            sb.append(y + 1).append("\n");
+
+            sb.append("  +---+---+---+---+---+---+---+---+").append("\n");
+        }
+        sb.append("    A   B   C   D   E   F   G   H");
+
+        return sb.toString();
+    }
 }
