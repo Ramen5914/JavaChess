@@ -518,9 +518,8 @@ public class Board {
         return false;
     }
 
-    private boolean isSquareUnderAttack(int square, Piece.Color defendingColor) {
-        // Check if a square is under attack by the opponent of the defending color
-        return isSquareAttackedBy(square, defendingColor.opposite());
+    private boolean isSquareUnderAttack10x12(int s10x12, Piece.Color defendingColor) {
+        return isSquareAttackedBy10x12(s10x12, defendingColor.opposite());
     }
 
     private boolean canPieceAttackSquare(int from, int to, Piece piece) {
