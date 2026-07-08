@@ -154,4 +154,30 @@ public class Util {
     public static boolean hasOnlyOnePiece(long bb) {
         return Long.bitCount(bb) == 1;
     }
+
+    public static @Nullable Direction.D10X12 getD10X12FromSquares(int from10x12, int to10x12) {
+        int x1 = from10x12 % 10;
+        int y1 = from10x12 / 10;
+        int x2 = to10x12 % 10;
+        int y2 = to10x12 / 10;
+
+        int dx = x2 - x1;
+        int dy = y2 - y1;
+
+        if (dx == 0 && dy == 0) return null;
+
+        if (dy > 0) {
+            if (dx > 0) return Direction.D10X12.NE;
+            if (dx < 0) return Direction.D10X12.NW;
+            return Direction.D10X12.N;
+        } else if (dy < 0) {
+            if (dx > 0) return Direction.D10X12.SE;
+            if (dx < 0) return Direction.D10X12.SW;
+            return Direction.D10X12.S;
+        } else {
+            if (dx > 0) return Direction.D10X12.E;
+            return Direction.D10X12.W;
+        }
+    }
+
 }
