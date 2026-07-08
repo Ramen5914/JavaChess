@@ -679,8 +679,22 @@ public class Board {
         return Math.abs(rankDiff) != 0 && Math.abs(fileDiff) != 0;
     }
 
-    private boolean isValidBishopMove(int rankDiff, int fileDiff) {
-        return Math.abs(rankDiff) == Math.abs(fileDiff) && rankDiff != 0;
+    private boolean isValidBishopMove(Move move, Piece destinationPiece, int from10x12, int to10x12) {
+        Direction.D10X12 direction = Util.getD10X12FromSquares(from10x12, to10x12);
+
+        if (direction == Direction.D10X12.N || direction == Direction.D10X12.E || direction == Direction.D10X12.S || direction == Direction.D10X12.W) {
+            return false;
+        }
+
+        if (isPathClear10x12(from10x12, to10x12, direction)) {
+            if (move.isCapture() && destinationPiece.getColor() == playerToMove.opposite()) {
+                return true;
+            } else {
+                return destinationPiece.isEmpty();
+            }
+        } else {
+            return false;
+        }
     }
 
     private boolean isValidRookMove(int rankDiff, int fileDiff) {
