@@ -774,15 +774,7 @@ public class Board {
 
     private boolean isKingsideCastleLegal() {
         if (playerToMove.isWhite()) {
-            return (
-                    (castlingRights & 0b1) == 1 &&
-                            isPathClear10x12(0x19, 0x1C, Direction.D10X12.E) &&
-                            (
-                                    !isSquareUnderAttack10x12(0x19, playerToMove) &&
-                                            !isSquareUnderAttack10x12(0x1A, playerToMove) &&
-                                            !isSquareUnderAttack10x12(0x1B, playerToMove)
-                            )
-            );
+            return ((castlingRights & 0b1) == 1 && isPathClear10x12(0x19, 0x1C, Direction.D10X12.E) && (!isSquareUnderAttack10x12(0x19, playerToMove) && !isSquareUnderAttack10x12(0x1A, playerToMove) && !isSquareUnderAttack10x12(0x1B, playerToMove)));
         } else {
             // TODO implement black king side castling
             return false;
@@ -803,39 +795,27 @@ public class Board {
         }
     }
 
-    // TODO implement queen side castling
     private boolean isQueensideCastleLegal() {
-        return false;
+        if (playerToMove.isWhite()) {
+            return ((castlingRights >>> 1 & 0b1) == 1 && isPathClear10x12(0x19, 0x15, Direction.D10X12.W) && (!isSquareUnderAttack10x12(0x16, playerToMove) && !isSquareUnderAttack10x12(0x17, playerToMove) && !isSquareUnderAttack10x12(0x18, playerToMove) && !isSquareUnderAttack10x12(0x19, playerToMove)));
+        } else {
+            // TODO implement black queen side castling
+            return false;
 
-//        if (playerToMove.isWhite()) {
-//            if ((castlingRights & 0b0010) == 0) {
-//                return false; // No queenside castling rights
+//            if ((castlingRights & 0b0100) == 0) {
+//                return false; // No kingside castling rights
 //            }
-//            // Squares a1, b1, c1, d1, e1 must be unoccupied
-//            if (!(board10x12.get(0).isRook() && board10x12.get(1).isEmpty() && board10x12.get(2).isEmpty() &&
-//                   board10x12.get(3).isEmpty() && board10x12.get(4).isKing())) {
+//            // Squares e8, f8, g8 must be unoccupied
+//            if (!(board10x12.get(60).isKing() && board10x12.get(61).isEmpty() && board10x12.get(62).isEmpty() &&
+//                   board10x12.get(63).isRook())) {
 //                return false;
 //            }
 //            // King must not be in check, and cannot move through check
-//            // Check e1 (from), d1 (through), c1 (to)
-//            return !isSquareUnderAttack(4, playerToMove) &&
-//                   !isSquareUnderAttack(3, playerToMove) &&
-//                   !isSquareUnderAttack(2, playerToMove);
-//        } else {
-//            if ((castlingRights & 0b1000) == 0) {
-//                return false; // No queenside castling rights
-//            }
-//            // Squares a8, b8, c8, d8, e8 must be unoccupied
-//            if (!(board10x12.get(56).isRook() && board10x12.get(57).isEmpty() && board10x12.get(58).isEmpty() &&
-//                   board10x12.get(59).isEmpty() && board10x12.get(60).isKing())) {
-//                return false;
-//            }
-//            // King must not be in check, and cannot move through check
-//            // Check e8 (from), d8 (through), c8 (to)
+//            // Check e8 (from), f8 (through), g8 (to)
 //            return !isSquareUnderAttack(60, playerToMove) &&
-//                   !isSquareUnderAttack(59, playerToMove) &&
-//                   !isSquareUnderAttack(58, playerToMove);
-//        }
+//                   !isSquareUnderAttack(61, playerToMove) &&
+//                   !isSquareUnderAttack(62, playerToMove);
+        }
     }
 
     public int generateLegalMoves(Move[] moveList) {
