@@ -9,6 +9,10 @@ public class JavaChess {
         board.makeMove("c8a6");
         board.makeMove("e1a1");
 
+//        Board board = new Board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+//
+//        board.makeMove("e2e4");
+
         System.out.println(board.ascii8x8());
         System.out.println(board.toFen());
     }
