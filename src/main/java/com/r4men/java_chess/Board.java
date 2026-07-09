@@ -330,23 +330,43 @@ public class Board {
     private void markEnPassantSquare(@NotNull Move move) {
         int to = move.getTo10x12();
 
-        int leftIndex = move.getTo10x12() + Direction.D10X12.W.toInt();
-        Piece left = board10x12.get(leftIndex);
+        int leftIndex10x12 = move.getTo10x12() + Direction.D10X12.W.toInt();
+        Piece left = board10x12.get(leftIndex10x12);
+        boolean leftIsPawn = left.isPawn();
 
-        int rightIndex = move.getTo10x12() + Direction.D10X12.E.toInt();
-        Piece right = board10x12.get(rightIndex);
+        int rightIndex10x12 = move.getTo10x12() + Direction.D10X12.E.toInt();
+        Piece right = board10x12.get(rightIndex10x12);
+        boolean rightIsPawn = right.isPawn();
 
-        enPassantSquare10x12 = switch (playerToMove) {
-            case WHITE -> {
-                // It's WHITE's turn, so BLACK just moved SOUTH. En passant square is one rank NORTH of destination.
-                yield to + Direction.D10X12.N.toInt();
-            }
-            case BLACK -> {
-                // It's BLACK's turn, so WHITE just moved NORTH. En passant square is one rank SOUTH of destination.
-                yield to + Direction.D10X12.S.toInt();
-            }
-            default -> throw new IllegalStateException("PlayerToMove is neither WHITE nor BLACK: " + playerToMove);
-        };
+        if (leftIsPawn || rightIsPawn) {
+            enPassantSquare10x12 = switch (playerToMove) {
+                case WHITE -> {
+                    int ep10x12 = to + Direction.D10X12.N.toInt();
+                    if (leftIsPawn && wouldBeInCheckAfterMove(new Move(Util.convert10x12to8x8(leftIndex10x12), Util.convert10x12to8x8(ep10x12), Move.Flag.EN_PASSANT_CAPTURE_FLAG, ep10x12, castlingRights, halfmoveClock, board10x12.get(ep10x12)))) {
+                        yield ep10x12;
+                    } else if (rightIsPawn && wouldBeInCheckAfterMove(new Move(Util.convert10x12to8x8(rightIndex10x12), Util.convert10x12to8x8(ep10x12), Move.Flag.EN_PASSANT_CAPTURE_FLAG, ep10x12, castlingRights, halfmoveClock, board10x12.get(ep10x12)))) {
+                        yield ep10x12;
+                    } else {
+                        yield -1;
+                    }
+                }
+                case BLACK -> {
+                    int ep10x12 = to + Direction.D10X12.S.toInt();
+
+                    if (leftIsPawn && wouldBeInCheckAfterMove(new Move(Util.convert10x12to8x8(leftIndex10x12), Util.convert10x12to8x8(ep10x12), Move.Flag.EN_PASSANT_CAPTURE_FLAG, ep10x12, castlingRights, halfmoveClock, board10x12.get(ep10x12)))) {
+                        yield ep10x12;
+                    } else if (rightIsPawn && wouldBeInCheckAfterMove(new Move(Util.convert10x12to8x8(rightIndex10x12), Util.convert10x12to8x8(ep10x12), Move.Flag.EN_PASSANT_CAPTURE_FLAG, ep10x12, castlingRights, halfmoveClock, board10x12.get(ep10x12)))) {
+                        yield ep10x12;
+                    } else {
+                        yield -1;
+                    }
+                }
+                default -> throw new IllegalStateException("PlayerToMove is neither WHITE nor BLACK: " + playerToMove);
+            };
+        } else {
+            enPassantSquare10x12 = -1;
+        }
+
     }
 
     public void undoMove(Move move) {
