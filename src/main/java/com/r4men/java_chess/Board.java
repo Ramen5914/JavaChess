@@ -311,6 +311,14 @@ public class Board {
                 if (!move.isDoublePawnPush()) {
                     enPassantSquare10x12 = -1;
                 }
+
+                if (move.isCastle()) {
+                    if (piece.isWhite()) {
+                        castlingRights &= 0b1100;
+                    } else {
+                        castlingRights &= 0b0011;
+                    }
+                }
             }
         }
     }
