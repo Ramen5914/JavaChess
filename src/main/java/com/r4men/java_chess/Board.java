@@ -273,7 +273,7 @@ public class Board {
                 } else if (move.isKingCastle()) {
                     // For kingside castling, the move is encoded with 'to' == rook's original square
                     // King moves to the appropriate square and rook is moved from its original square
-                    if (playerToMove.isWhite()) {
+                    if (piece.isWhite()) {
                         // King from e1 to g1
                         setSquare10x12(6, piece);
 //                        emptySquare10x12(from);
@@ -291,7 +291,7 @@ public class Board {
                 } else if (move.isQueenCastle()) {
                     // For queenside castling, the move is encoded with 'to' == rook's original square
                     // King moves to the appropriate square and rook is moved from its original square
-                    if (playerToMove.isWhite()) {
+                    if (piece.isWhite()) {
                         // King from e1 to c1
                         setSquare10x12(2, piece);
 //                        emptySquare10x12(from);
