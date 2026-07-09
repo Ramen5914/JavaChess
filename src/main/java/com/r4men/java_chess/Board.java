@@ -337,11 +337,11 @@ public class Board {
 
         int leftIndex10x12 = move.getTo10x12() + Direction.D10X12.W.toInt();
         Piece left = board10x12.get(leftIndex10x12);
-        boolean leftIsPawn = left.isPawn();
+        boolean leftIsPawn = left.isPawn() && left.matchesColor(playerToMove);
 
         int rightIndex10x12 = move.getTo10x12() + Direction.D10X12.E.toInt();
         Piece right = board10x12.get(rightIndex10x12);
-        boolean rightIsPawn = right.isPawn();
+        boolean rightIsPawn = right.isPawn() && right.matchesColor(playerToMove);
 
         if (leftIsPawn || rightIsPawn) {
             enPassantSquare10x12 = switch (playerToMove) {
