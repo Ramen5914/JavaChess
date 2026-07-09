@@ -70,11 +70,11 @@ public class UtilTest {
 
                             Triple<Integer, Integer, Piece.@Nullable PieceType> output = Util.convertUciTo8x8Move(uciMove);
 
-                            assertEquals(from, output.getFirst(), "Failed for uciMove: " + uciMove);
-                            assertEquals(to, output.getSecond(), "Failed for uciMove: " + uciMove);
+                            assertEquals(from, output.first(), "Failed for uciMove: " + uciMove);
+                            assertEquals(to, output.second(), "Failed for uciMove: " + uciMove);
 
                             if (p == ' ') {
-                                assertNull(output.getThird(), "Failed for uciMove: " + uciMove);
+                                assertNull(output.third(), "Failed for uciMove: " + uciMove);
                             } else {
                                 Piece.PieceType expected = switch (p) {
                                     case 'q' -> Piece.PieceType.QUEEN;
@@ -84,7 +84,7 @@ public class UtilTest {
                                     default -> throw new IllegalStateException("Unexpected value: " + p);
                                 };
 
-                                assertEquals(expected, output.getThird(), "Failed for uciMove: " + uciMove);
+                                assertEquals(expected, output.third(), "Failed for uciMove: " + uciMove);
                             }
                         }
                     }
