@@ -293,11 +293,11 @@ public class Board {
                     // King moves to the appropriate square and rook is moved from its original square
                     if (piece.isWhite()) {
                         // King from e1 to c1
-                        setSquare10x12(2, piece);
+                        setSquare10x12(0x17, piece);
 //                        emptySquare10x12(from);
                         // Rook moves to d1 (which is 'to')
-                        setSquare10x12(3, Piece.WHITE_ROOK);
-                        emptySquare10x12(0);
+                        setSquare10x12(0x18, Piece.WHITE_ROOK);
+                        emptySquare10x12(0x15);
                     } else {
                         // King from e8 to c8
                         setSquare10x12(58, piece);
