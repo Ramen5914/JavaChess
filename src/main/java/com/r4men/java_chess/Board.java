@@ -147,15 +147,15 @@ public class Board {
     private Move createMoveFromString(String move) {
         Triple<Integer, Integer, Piece.PieceType> parsed = Util.convertUciTo8x8Move(move);
 
-        int from8x8 = parsed.getFirst();
-        int to8x8 = parsed.getSecond();
+        int from8x8 = parsed.first();
+        int to8x8 = parsed.second();
 
         if (from8x8 == to8x8) {
             return null;
         } else {
             int from10x12 = Util.convert8x8to10x12(from8x8);
             int to10x12 = Util.convert8x8to10x12(to8x8);
-            Piece.PieceType promotionPiece = parsed.getThird();
+            Piece.PieceType promotionPiece = parsed.third();
 
             Piece fromPiece = board10x12.get(from10x12);
             Piece toPiece = board10x12.get(to10x12);
