@@ -591,9 +591,6 @@ public class Board {
     }
 
     private boolean isMoveValid(Move move, boolean ignoreSelfCheck) {
-        int from8x8 = move.getFrom8x8();
-        int to8x8 = move.getTo8x8();
-
         int from10x12 = move.getFrom10x12();
         int to10x12 = move.getTo10x12();
 
