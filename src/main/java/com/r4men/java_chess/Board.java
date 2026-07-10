@@ -249,18 +249,28 @@ public class Board {
                     if (move.isPromotion()) {
                         Piece.Color color = piece.getColor();
 
-                        // TODO finish promotion logic
-                        if (move.isQueenPromotion()) {
-                            if (color.isWhite()) {
-//                                setSquare10x12(to, Piece.WHITE_QUEEN);
-                            } else {
-//                                setSquare10x12(to, Piece.BLACK_QUEEN);
+                        switch (color) {
+                            case WHITE -> {
+                                if (move.isQueenPromotion()) {
+                                    setSquare10x12(to10x12, Piece.WHITE_QUEEN);
+                                } else if (move.isRookPromotion()) {
+                                    setSquare10x12(to10x12, Piece.WHITE_ROOK);
+                                } else if (move.isBishopPromotion()) {
+                                    setSquare10x12(to10x12, Piece.WHITE_BISHOP);
+                                } else if (move.isKnightPromotion()) {
+                                    setSquare10x12(to10x12, Piece.WHITE_KNIGHT);
+                                }
                             }
-                        } else if (move.isRookPromotion()) {
-                            if (color.isWhite()) {
-//                                setSquare10x12(to, Piece.WHITE_ROOK);
-                            } else {
-//                                setSquare10x12(to, Piece.BLACK_ROOK);
+                            case BLACK -> {
+                                if (move.isQueenPromotion()) {
+                                    setSquare10x12(to10x12, Piece.BLACK_QUEEN);
+                                } else if (move.isRookPromotion()) {
+                                    setSquare10x12(to10x12, Piece.BLACK_ROOK);
+                                } else if (move.isBishopPromotion()) {
+                                    setSquare10x12(to10x12, Piece.BLACK_BISHOP);
+                                } else if (move.isKnightPromotion()) {
+                                    setSquare10x12(to10x12, Piece.BLACK_KNIGHT);
+                                }
                             }
                         }
                     } else {
