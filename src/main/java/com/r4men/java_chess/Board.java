@@ -355,16 +355,12 @@ public class Board {
 
         if (leftIsPawn || rightIsPawn) {
             enPassantSquare10x12 = switch (playerToMove) {
-                case WHITE -> {
-                    int ep10x12 = to + Direction.D10X12.N.toInt();
-                    yield findEnPassantMove(leftIndex10x12, leftIsPawn, rightIndex10x12, rightIsPawn, ep10x12);
-                }
-                case BLACK -> {
-                    int ep10x12 = to + Direction.D10X12.S.toInt();
-                    yield findEnPassantMove(leftIndex10x12, leftIsPawn, rightIndex10x12, rightIsPawn, ep10x12);
-                }
-                default -> throw new IllegalStateException("PlayerToMove is neither WHITE nor BLACK: " + playerToMove);
+                case WHITE -> to + Direction.D10X12.N.toInt();
+                case BLACK -> to + Direction.D10X12.S.toInt();
+                default -> throw new IllegalStateException("PlayerToMove is neither WHITE nor BLACK");
             };
+
+            enPassantSquare10x12 = findEnPassantMove(leftIndex10x12, leftIsPawn, rightIndex10x12, rightIsPawn, enPassantSquare10x12);
         } else {
             enPassantSquare10x12 = -1;
         }
