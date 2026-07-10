@@ -511,15 +511,14 @@ public class Board {
         return toReturn;
     }
 
-    // TODO redo this function
     private boolean isKingInCheck(Piece.Color color) {
-        int kingSquare = Long.numberOfTrailingZeros(bitBoards[color.ordinal()][Piece.PieceType.KING.ordinal()]);
+        int kingSquare8x8 = Long.numberOfTrailingZeros(bitBoards[color.ordinal()][Piece.PieceType.KING.ordinal()]);
 
-        if (kingSquare == 64) {
+        if (kingSquare8x8 == 64) {
             throw new IllegalStateException("No king found on board for " + color);
         }
 
-        return isSquareAttackedBy10x12(Util.convert8x8to10x12(kingSquare), color.opposite());
+        return isSquareAttackedBy10x12(Util.convert8x8to10x12(kingSquare8x8), color.opposite());
     }
 
     // TODO finish logic in this method
