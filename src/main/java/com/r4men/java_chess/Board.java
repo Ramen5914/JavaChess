@@ -367,9 +367,9 @@ public class Board {
     }
 
     private int findEnPassantMove(int leftIndex10x12, boolean leftIsPawn, int rightIndex10x12, boolean rightIsPawn, int ep10x12) {
-        if (leftIsPawn && wouldBeInCheckAfterMove(new Move(Util.convert10x12to8x8(leftIndex10x12), Util.convert10x12to8x8(ep10x12), Move.Flag.EN_PASSANT_CAPTURE_FLAG, ep10x12, castlingRights, halfmoveClock, board10x12.get(ep10x12)))) {
+        if (leftIsPawn && !wouldBeInCheckAfterMove(new Move(Util.convert10x12to8x8(leftIndex10x12), Util.convert10x12to8x8(ep10x12), Move.Flag.EN_PASSANT_CAPTURE_FLAG, ep10x12, castlingRights, halfmoveClock, board10x12.get(ep10x12)))) {
             return ep10x12;
-        } else if (rightIsPawn && wouldBeInCheckAfterMove(new Move(Util.convert10x12to8x8(rightIndex10x12), Util.convert10x12to8x8(ep10x12), Move.Flag.EN_PASSANT_CAPTURE_FLAG, ep10x12, castlingRights, halfmoveClock, board10x12.get(ep10x12)))) {
+        } else if (rightIsPawn && !wouldBeInCheckAfterMove(new Move(Util.convert10x12to8x8(rightIndex10x12), Util.convert10x12to8x8(ep10x12), Move.Flag.EN_PASSANT_CAPTURE_FLAG, ep10x12, castlingRights, halfmoveClock, board10x12.get(ep10x12)))) {
             return ep10x12;
         } else {
             return -1;
