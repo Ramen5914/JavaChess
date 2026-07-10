@@ -13,6 +13,7 @@ class BoardTest {
 
     @Test
     void enPassant() {
+        // 1
         Board board = new Board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
 
         board.makeMove("e2e4");
@@ -26,6 +27,30 @@ class BoardTest {
 
         board.makeMove("f7f5");
         assertEquals("rnbqkbnr/ppp1p1pp/8/3pPp2/8/8/PPPP1PPP/RNBQKBNR w KQkq f6 0 3", board.toFen());
+
+        board.makeMove("e5f6");
+        assertEquals("rnbqkbnr/ppp1p1pp/5P2/3p4/8/8/PPPP1PPP/RNBQKBNR b KQkq - 0 3", board.toFen());
+
+        // 2
+        board = new Board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+
+        board.makeMove("e2e4");
+        assertEquals("rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1", board.toFen());
+
+        board.makeMove("d7d5");
+        assertEquals("rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2", board.toFen());
+
+        board.makeMove("e4e5");
+        assertEquals("rnbqkbnr/ppp1pppp/8/3pP3/8/8/PPPP1PPP/RNBQKBNR b KQkq - 0 2", board.toFen());
+
+        board.makeMove("d5d4");
+        assertEquals("rnbqkbnr/ppp1pppp/8/4P3/3p4/8/PPPP1PPP/RNBQKBNR w KQkq - 0 3", board.toFen());
+
+        board.makeMove("c2c4");
+        assertEquals("rnbqkbnr/ppp1pppp/8/4P3/2Pp4/8/PP1P1PPP/RNBQKBNR b KQkq c3 0 3", board.toFen());
+
+        board.makeMove("d4c3");
+        assertEquals("rnbqkbnr/ppp1pppp/8/4P3/8/2p5/PP1P1PPP/RNBQKBNR w KQkq - 0 4", board.toFen());
     }
 
     // Initial Position
