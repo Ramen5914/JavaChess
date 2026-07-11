@@ -555,22 +555,20 @@ public class Board {
         int rankDiff = toRank - fromRank;
         int fileDiff = toFile - fromFile;
 
-        Direction.D10X12 directionD = Util.getD10X12FromSquares(from10x12, to10x12);
+        Direction.D10X12 direction = Util.getD10X12FromSquares(from10x12, to10x12);
+
+        assert(direction != null);
 
         switch (piece.getPieceType()) {
             case PAWN:
-                // Pawns attack diagonally one square forward
-                int direction = piece.isWhite() ? 1 : -1;
-                return rankDiff == direction && Math.abs(fileDiff) == 1;
+                int start = piece.getColor().isWhite() ? Direction.D10X12.N.toInt() : Direction.D10X12.S.toInt();
+
+                return to10x12 == start + Direction.D10X12.E.toInt() || to10x12 == start + Direction.D10X12.W.toInt();
             case KNIGHT:
-                // Knight moves in L-shape
-                int absDiff = Math.abs(rankDiff) + Math.abs(fileDiff);
-                return absDiff == 3 && Math.abs(rankDiff) != 0 && Math.abs(fileDiff) != 0;
+                return isValidKnightMove(null, null, from10x12, to10x12);
             case BISHOP:
-                // Bishop moves diagonally
-                return Math.abs(rankDiff) == Math.abs(fileDiff) && rankDiff != 0 && isPathClear10x12(from10x12, to10x12, directionD);
+                return isPathClear10x12(from10x12, to10x12, direction) && Util.isRayFrom10x12(from10x12, to10x12, direction) && direction.isDiagonal();
             case ROOK:
-                // Rook moves horizontally or vertically
                 return ((rankDiff == 0 && fileDiff != 0) || (rankDiff != 0 && fileDiff == 0)) && isPathClear10x12(from10x12, to10x12, directionD);
             case QUEEN:
                 // Queen moves like rook or bishop
