@@ -521,7 +521,6 @@ public class Board {
         return isSquareAttackedBy10x12(Util.convert8x8to10x12(kingSquare8x8), color.opposite());
     }
 
-    // TODO finish logic in this method
     private boolean isSquareAttackedBy10x12(int s10x12, Piece.Color attackingColor) {
         long occBB = bitBoards[attackingColor.ordinal()][Piece.PieceType.OCC.ordinal()];
 
@@ -543,6 +542,7 @@ public class Board {
         return isSquareAttackedBy10x12(s10x12, defendingColor.opposite());
     }
 
+    // TODO redo logic in this method
     private boolean canPieceAttackSquare10x12(int from10x12, int to10x12, Piece piece) {
         if (from10x12 == to10x12) {
             return false;
