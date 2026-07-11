@@ -5,6 +5,9 @@ public interface Direction {
 
     Direction opposite();
 
+    boolean isDiagonal();
+    boolean isOrthogonal();
+
     enum D10X12 implements Direction {
         N(10), NE(11), E(1), SE(-9),
         S(-10), SW(-11), W(-1), NW(9);
@@ -29,6 +32,16 @@ public interface Direction {
             }
 
             throw new RuntimeException("Opposite direction not found for " + this);
+        }
+
+        @Override
+        public boolean isDiagonal() {
+            return this == NE || this == SE || this == SW || this == NW;
+        }
+
+        @Override
+        public boolean isOrthogonal() {
+            return this == N || this == E || this == S || this == W;
         }
     }
 
@@ -56,6 +69,16 @@ public interface Direction {
             }
 
             throw new RuntimeException("Opposite direction not found for " + this);
+        }
+
+        @Override
+        public boolean isDiagonal() {
+            return this == NE || this == SE || this == SW || this == NW;
+        }
+
+        @Override
+        public boolean isOrthogonal() {
+            return this == N || this == E || this == S || this == W;
         }
     }
 }
