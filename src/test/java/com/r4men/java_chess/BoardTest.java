@@ -1,6 +1,8 @@
 package com.r4men.java_chess;
 
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class BoardTest {
     Board initial = new Board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
@@ -8,6 +10,48 @@ class BoardTest {
     Board pos3 = new Board("8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 1 ");
     Board pos4 = new Board("r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1");
 
+
+    @Test
+    void enPassant() {
+        // 1
+        Board board = new Board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+
+        board.makeMove("e2e4");
+        assertEquals("rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1", board.toFen());
+
+        board.makeMove("d7d5");
+        assertEquals("rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2", board.toFen());
+
+        board.makeMove("e4e5");
+        assertEquals("rnbqkbnr/ppp1pppp/8/3pP3/8/8/PPPP1PPP/RNBQKBNR b KQkq - 0 2", board.toFen());
+
+        board.makeMove("f7f5");
+        assertEquals("rnbqkbnr/ppp1p1pp/8/3pPp2/8/8/PPPP1PPP/RNBQKBNR w KQkq f6 0 3", board.toFen());
+
+        board.makeMove("e5f6");
+        assertEquals("rnbqkbnr/ppp1p1pp/5P2/3p4/8/8/PPPP1PPP/RNBQKBNR b KQkq - 0 3", board.toFen());
+
+        // 2
+        board = new Board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+
+        board.makeMove("e2e4");
+        assertEquals("rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1", board.toFen());
+
+        board.makeMove("d7d5");
+        assertEquals("rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2", board.toFen());
+
+        board.makeMove("e4e5");
+        assertEquals("rnbqkbnr/ppp1pppp/8/3pP3/8/8/PPPP1PPP/RNBQKBNR b KQkq - 0 2", board.toFen());
+
+        board.makeMove("d5d4");
+        assertEquals("rnbqkbnr/ppp1pppp/8/4P3/3p4/8/PPPP1PPP/RNBQKBNR w KQkq - 0 3", board.toFen());
+
+        board.makeMove("c2c4");
+        assertEquals("rnbqkbnr/ppp1pppp/8/4P3/2Pp4/8/PP1P1PPP/RNBQKBNR b KQkq c3 0 3", board.toFen());
+
+        board.makeMove("d4c3");
+        assertEquals("rnbqkbnr/ppp1pppp/8/4P3/8/2p5/PP1P1PPP/RNBQKBNR w KQkq - 0 4", board.toFen());
+    }
 
     // Initial Position
 //    @Test
@@ -45,7 +89,7 @@ class BoardTest {
         assertEquals(193690690, kiwipete.fastPerft(5));
     }
 
-//    @Test
+    //    @Test
     void pos3() {
         assertEquals(14, pos3.perft(1));
         assertEquals(191, pos3.perft(2));
@@ -56,7 +100,7 @@ class BoardTest {
         assertEquals(178633661, pos3.perft(7));
     }
 
-//    @Test
+    //    @Test
     void pos4() {
         assertEquals(6, pos4.perft(1));
         assertEquals(264, pos4.perft(2));

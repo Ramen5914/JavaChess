@@ -3,6 +3,7 @@ import re
 import subprocess
 from chess import Board
 
+
 def main():
     board = Board()
     board.set_fen("r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1")
@@ -32,7 +33,8 @@ def main():
     for fen in fenPositions:
         # print(f'#{i+1}')
 
-        javaOutput = subprocess.run(['java', '-jar', './build/libs/JavaChess-0.0.1.jar', fen, str(depth)], capture_output=True, text=True)
+        javaOutput = subprocess.run(['java', '-jar', './build/libs/JavaChess-0.0.1.jar', fen, str(depth)],
+                                    capture_output=True, text=True)
 
         javaPerft = int(javaOutput.stdout)
         stockfishPerft = run_stockfish_perft(fen, depth)
@@ -60,6 +62,7 @@ def run_stockfish_perft(fen: str, depth: int) -> int:
         raise RuntimeError(f"Could not parse Stockfish output:\n{result.stdout}")
 
     return int(match.group(1))
+
 
 if __name__ == '__main__':
     main()

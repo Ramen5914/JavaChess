@@ -1,5 +1,6 @@
 from chess import Board
 
+
 def main():
     board = Board()
 
@@ -7,6 +8,7 @@ def main():
 
     print(board.legal_moves)
     print(board.legal_moves.count())
+
 
 if __name__ == '__main__':
     main()

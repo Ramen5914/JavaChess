@@ -22,6 +22,98 @@ public class Piece {
     private final Color color;
     private final char pieceChar;
 
+    private Piece(PieceType pieceType, Color color, char pieceChar) {
+        this.pieceType = pieceType;
+        this.color = color;
+        this.pieceChar = pieceChar;
+    }
+
+    private Piece() {
+        this.pieceType = PieceType.EMPTY;
+        this.color = Color.EMPTY;
+        this.pieceChar = ' ';
+    }
+
+    public static Piece fromChar(char c) {
+        return switch (c) {
+            case 'B' -> WHITE_BISHOP;
+            case 'K' -> WHITE_KING;
+            case 'N' -> WHITE_KNIGHT;
+            case 'P' -> WHITE_PAWN;
+            case 'R' -> WHITE_ROOK;
+            case 'Q' -> WHITE_QUEEN;
+            case 'b' -> BLACK_BISHOP;
+            case 'k' -> BLACK_KING;
+            case 'n' -> BLACK_KNIGHT;
+            case 'p' -> BLACK_PAWN;
+            case 'r' -> BLACK_ROOK;
+            case 'q' -> BLACK_QUEEN;
+            case ' ' -> EMPTY;
+            default -> throw new IllegalArgumentException("Illegal piece character " + c);
+        };
+    }
+
+    @Override
+    public String toString() {
+        return String.valueOf(this.pieceChar);
+    }
+
+    public PieceType getPieceType() {
+        return pieceType;
+    }
+
+    public Color getColor() {
+        return color;
+    }
+
+    public char getPieceChar() {
+        return pieceChar;
+    }
+
+    public boolean isEmpty() {
+        return pieceType == PieceType.EMPTY;
+    }
+
+    public boolean isOffBoard() {
+        return pieceType == PieceType.OFF_BOARD;
+    }
+
+    public boolean matchesColor(Color color) {
+        return this.color == color;
+    }
+
+    public boolean isWhite() {
+        return color == Color.WHITE;
+    }
+
+    public boolean isBlack() {
+        return color == Color.BLACK;
+    }
+
+    public boolean isPawn() {
+        return pieceType == PieceType.PAWN;
+    }
+
+    public boolean isKing() {
+        return pieceType == PieceType.KING;
+    }
+
+    public boolean isKnight() {
+        return pieceType == PieceType.KNIGHT;
+    }
+
+    public boolean isBishop() {
+        return pieceType == PieceType.BISHOP;
+    }
+
+    public boolean isQueen() {
+        return pieceType == PieceType.QUEEN;
+    }
+
+    public boolean isRook() {
+        return pieceType == PieceType.ROOK;
+    }
+
     public enum PieceType {
         BISHOP,
         KING,
@@ -31,7 +123,7 @@ public class Piece {
         ROOK,
         OCC,
         EMPTY,
-        OFF_BOARD;
+        OFF_BOARD
     }
 
     public enum Color {
@@ -57,70 +149,5 @@ public class Piece {
                 return EMPTY;
             }
         }
-    }
-
-    private Piece(PieceType pieceType, Color color, char pieceChar) {
-        this.pieceType = pieceType;
-        this.color = color;
-        this.pieceChar = pieceChar;
-    }
-
-    private Piece() {
-        this.pieceType = PieceType.EMPTY;
-        this.color = Color.EMPTY;
-        this.pieceChar = ' ';
-    }
-
-    @Override
-    public String toString() {
-        return String.format("%s %s", color.toString(), pieceType);
-    }
-
-    public PieceType getPieceType() {
-        return pieceType;
-    }
-
-    public Color getColor() {
-        return color;
-    }
-
-    public char getPieceChar() {
-        return pieceChar;
-    }
-
-    public boolean isEmpty() {
-        return pieceType == PieceType.EMPTY;
-    }
-
-    public boolean isOffBoard() {
-        return pieceType == PieceType.OFF_BOARD;
-    }
-
-    public boolean isWhite() {
-        return color == Color.WHITE;
-    }
-
-    public boolean isPawn() {
-        return pieceType == PieceType.PAWN;
-    }
-
-    public boolean isKing() {
-        return pieceType == PieceType.KING;
-    }
-
-    public boolean isKnight() {
-        return pieceType == PieceType.KNIGHT;
-    }
-
-    public boolean isBishop() {
-        return pieceType == PieceType.BISHOP;
-    }
-
-    public boolean isQueen() {
-        return pieceType == PieceType.QUEEN;
-    }
-
-    public boolean isRook() {
-        return pieceType == PieceType.ROOK;
     }
 }
