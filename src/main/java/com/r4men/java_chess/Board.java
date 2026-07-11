@@ -569,12 +569,12 @@ public class Board {
             case BISHOP:
                 return isPathClear10x12(from10x12, to10x12, direction) && Util.isRayFrom10x12(from10x12, to10x12, direction) && direction.isDiagonal();
             case ROOK:
-                return ((rankDiff == 0 && fileDiff != 0) || (rankDiff != 0 && fileDiff == 0)) && isPathClear10x12(from10x12, to10x12, directionD);
+                return ((rankDiff == 0 && fileDiff != 0) || (rankDiff != 0 && fileDiff == 0)) && isPathClear10x12(from10x12, to10x12, direction);
             case QUEEN:
                 // Queen moves like rook or bishop
                 boolean isRookMove = (rankDiff == 0 && fileDiff != 0) || (rankDiff != 0 && fileDiff == 0);
                 boolean isBishopMove = Math.abs(rankDiff) == Math.abs(fileDiff) && rankDiff != 0;
-                return (isRookMove || isBishopMove) && isPathClear10x12(from10x12, to10x12, directionD);
+                return (isRookMove || isBishopMove) && isPathClear10x12(from10x12, to10x12, direction);
             case KING:
                 // King moves one square in any direction
                 return Math.abs(rankDiff) <= 1 && Math.abs(fileDiff) <= 1 && (rankDiff != 0 || fileDiff != 0);
