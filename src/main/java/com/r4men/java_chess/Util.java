@@ -1,12 +1,12 @@
 package com.r4men.java_chess;
 
-import com.r4men.java_chess.type.Triple;
+import com.r4men.java_chess.type.Trio;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class Util {
+public final class Util {
     //                 HEX:
     //         A  B  C  D  E  F  G  H
     //   | 6E 6F 70 71 72 73 74 75 76 77 |
@@ -22,12 +22,12 @@ public class Util {
     //   | 0A 0B 0C 0D 0E 0F 10 11 12 13 |
     //   | 00 01 02 03 04 05 06 07 08 09 |
     //         A  B  C  D  E  F  G  H
-    private static final boolean[] board10x12 = new boolean[120];
+    private static final boolean[] offBoardArray = new boolean[120];
 
     static {
         for (int i = 0; i < 120; i++) {
             if (i % 10 != 0 && i % 10 != 9 && i > 0x14 && i < 0x63) {
-                board10x12[i] = true;
+                offBoardArray[i] = true;
             }
         }
     }
@@ -65,7 +65,7 @@ public class Util {
         int step = direction.toInt();
         int square = from + step;
 
-        while (square >= 0 && square < 120 && board10x12[square]) {
+        while (square >= 0 && square < 120 && offBoardArray[square]) {
             if (square == to) {
                 return true;
             }
@@ -112,10 +112,10 @@ public class Util {
      * Converts a UCI move string into usable integers and PieceTypes for the Move constructor
      *
      * @param uciMove a string that matches ^([a-hA-H][1-8])([a-hA-H][1-8])([qrbn])?$ regex
-     * @return a {@link Triple} containing two Integers (from8x8, to8x8) and a {@link Piece.PieceType PieceType} for promotion (null if no promotion)
+     * @return a {@link Trio} containing two Integers (from8x8, to8x8) and a {@link Piece.PieceType PieceType} for promotion (null if no promotion)
      * @throws IllegalArgumentException if the uciMove string does not match the regex
      */
-    public static Triple<Integer, Integer, Piece.@Nullable PieceType> convertUciTo8x8Move(String uciMove) {
+    public static Trio<Integer, Integer, Piece.@Nullable PieceType> convertUciTo8x8Move(String uciMove) {
         String pattern = "^([a-h][1-8])([a-h][1-8])([qrbn])?$";
         Pattern p = Pattern.compile(pattern);
         Matcher m = p.matcher(uciMove.toLowerCase());
@@ -125,7 +125,7 @@ public class Util {
             char[] toSquare = m.group(2).toCharArray();
             char promotion = m.group(3) == null ? ' ' : m.group(3).charAt(0);
 
-            return new Triple<>(
+            return new Trio<>(
                     (Character.getNumericValue(fromSquare[1]) - 1) * 8 + (fromSquare[0] - 'a'),
                     (Character.getNumericValue(toSquare[1]) - 1) * 8 + (toSquare[0] - 'a'),
                     switch (promotion) {
@@ -210,5 +210,73 @@ public class Util {
 
     public static int getFileDistance10x12(int from10x12, int to10x12) {
         return Math.abs(to10x12 % 10 - from10x12 % 10);
+    }
+
+    /**
+     * Gets the rank of a square in 10x12 representation
+     *
+     * @param s10x12 index of the square to get the rank for, in 10x12 representation
+     * @return an int from 0-7, where 0 is rank 1 and 7 is rank 8 on a chess board
+     * @throws IllegalArgumentException if the square is not on the board for 10x12 representation
+     */
+    public static int getRank10x12(int s10x12) {
+        if (isIntOffBoard10x12(s10x12)) {
+            throw new IllegalArgumentException("Invalid square (Off-Board on 10x12): " + s10x12);
+        }
+
+        return (s10x12 / 10) - 2;
+    }
+
+    /**
+     * Gets the file of a square in 10x12 representation
+     *
+     * @param s10x12 index of the square to get the file for, in 10x12 representation
+     * @return an int from 0-7, where 0 is the A file and 7 is the H file on a chess board
+     * @throws IllegalArgumentException if the square is not on the board for 10x12 representation
+     */
+    public static int getFile10x12(int s10x12) {
+        if (isIntOffBoard10x12(s10x12)) {
+            throw new IllegalArgumentException("Invalid square (Off-Board on 10x12): " + s10x12);
+        }
+
+        return (s10x12 % 10) - 1;
+    }
+
+    public static int getRankDiff10x12(int from10x12, int to10x12) {
+        return getRank10x12(to10x12) - getRank10x12(from10x12);
+    }
+
+    public static int getFileDiff10x12(int from10x12, int to10x12) {
+        return getFile10x12(to10x12) - getFile10x12(from10x12);
+    }
+
+    public static boolean isIntOffBoard10x12(int index) {
+        return index < 0x15 || index > 0x62 || index % 10 == 0 || index % 10 == 9;
+    }
+
+    public static boolean isIntOffBoard8x8(int index) {
+        return index < 0 || index > 63;
+    }
+
+    public static boolean isPathClear10x12(Board board, int from10x12, int to10x12) {
+        Direction.D10X12 direction = getD10X12FromSquares(from10x12, to10x12);
+
+        if (direction == null) {
+            throw new IllegalArgumentException("Squares " + from10x12 + " and " + to10x12 + " are not aligned");
+        }
+
+        if (Util.isRayFrom10x12(from10x12, to10x12, direction)) {
+            int squareToCheck = from10x12 + direction.toInt();
+            while (squareToCheck != to10x12) {
+                if (!board.getPieceAt10x12(squareToCheck).isEmpty()) {
+                    return false;
+                }
+                squareToCheck += direction.toInt();
+            }
+
+            return true;
+        } else {
+            throw new IllegalArgumentException("Squares " + from10x12 + " and " + to10x12 + " are not aligned in direction " + direction);
+        }
     }
 }

@@ -6,7 +6,7 @@ public class JavaChess {
 
         board.makeMove("f7f5");
 
-        System.out.println(board.ascii8x8());
+//        System.out.println(board.ascii8x8());
         System.out.println(board.toFen());
     }
 }

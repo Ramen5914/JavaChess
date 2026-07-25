@@ -141,13 +141,11 @@ public class Piece {
         }
 
         public Color opposite() {
-            if (this == WHITE) {
-                return BLACK;
-            } else if (this == BLACK) {
-                return WHITE;
-            } else {
-                return EMPTY;
-            }
+            return switch (this) {
+                case WHITE -> BLACK;
+                case BLACK -> WHITE;
+                default -> throw new IllegalStateException("No opposite color for " + this);
+            };
         }
     }
 }

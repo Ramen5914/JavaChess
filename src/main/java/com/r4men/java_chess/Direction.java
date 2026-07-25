@@ -6,7 +6,16 @@ public interface Direction {
     Direction opposite();
 
     boolean isDiagonal();
+
     boolean isOrthogonal();
+
+    boolean isNorth();
+
+    boolean isEast();
+
+    boolean isSouth();
+
+    boolean isWest();
 
     enum D10X12 implements Direction {
         N(10), NE(11), E(1), SE(-9),
@@ -25,13 +34,16 @@ public interface Direction {
 
         @Override
         public D10X12 opposite() {
-            for (D10X12 direction : D10X12.values()) {
-                if (direction.value == -this.value) {
-                    return direction;
-                }
-            }
-
-            throw new RuntimeException("Opposite direction not found for " + this);
+            return switch (this) {
+                case N -> S;
+                case NE -> SW;
+                case E -> W;
+                case SE -> NW;
+                case S -> N;
+                case SW -> NE;
+                case W -> E;
+                case NW -> SE;
+            };
         }
 
         @Override
@@ -42,6 +54,26 @@ public interface Direction {
         @Override
         public boolean isOrthogonal() {
             return this == N || this == E || this == S || this == W;
+        }
+
+        @Override
+        public boolean isNorth() {
+            return this == N || this == NE || this == NW;
+        }
+
+        @Override
+        public boolean isEast() {
+            return this == E || this == NE || this == SE;
+        }
+
+        @Override
+        public boolean isSouth() {
+            return this == S || this == SE || this == SW;
+        }
+
+        @Override
+        public boolean isWest() {
+            return this == W || this == NW || this == SW;
         }
     }
 
@@ -79,6 +111,26 @@ public interface Direction {
         @Override
         public boolean isOrthogonal() {
             return this == N || this == E || this == S || this == W;
+        }
+
+        @Override
+        public boolean isNorth() {
+            return this == N || this == NE || this == NW;
+        }
+
+        @Override
+        public boolean isEast() {
+            return this == E || this == NE || this == SE;
+        }
+
+        @Override
+        public boolean isSouth() {
+            return this == S || this == SE || this == SW;
+        }
+
+        @Override
+        public boolean isWest() {
+            return this == W || this == NW || this == SW;
         }
     }
 }

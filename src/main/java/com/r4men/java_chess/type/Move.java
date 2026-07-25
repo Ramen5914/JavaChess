@@ -1,5 +1,7 @@
-package com.r4men.java_chess;
+package com.r4men.java_chess.type;
 
+import com.r4men.java_chess.Piece;
+import com.r4men.java_chess.Util;
 import org.jetbrains.annotations.NotNull;
 
 public record Move(int move, int enPassantSquare10x12, int castlingRights, int halfmoveClock,
@@ -28,7 +30,11 @@ public record Move(int move, int enPassantSquare10x12, int castlingRights, int h
 
     @Override
     public @NotNull String toString() {
-        return String.format("%s -> %s (%s)", String.format("%2s", Integer.toHexString(getFrom10x12()).replace(' ', '0')), String.format("%2s", Integer.toHexString(getTo10x12()).replace(' ', '0')), Flag.fromInt(getFlags()));
+        return String.format(
+                "0x%s -> 0x%s (%s)",
+                String.format("%2s", Integer.toHexString(getFrom10x12()).replace(' ', '0')),
+                String.format("%2s", Integer.toHexString(getTo10x12()).replace(' ', '0')),
+                Flag.fromInt(getFlags()));
     }
 
     public int getFrom8x8() {
@@ -127,12 +133,17 @@ public record Move(int move, int enPassantSquare10x12, int castlingRights, int h
 
         Move a = (Move) obj;
 
-        return (move & 0xffff) == (a.move & 0xffff);
+        return (move & 0xffff) == (a.move & 0xffff) && capturedPiece == a.capturedPiece && enPassantSquare10x12 == a.enPassantSquare10x12 && castlingRights == a.castlingRights && halfmoveClock == a.halfmoveClock;
     }
 
     @Override
     public int hashCode() {
-        return move & 0xffff;
+        int result = Integer.hashCode(move & 0xffff);
+        result = 31 * result + Integer.hashCode(enPassantSquare10x12);
+        result = 31 * result + Integer.hashCode(castlingRights);
+        result = 31 * result + Integer.hashCode(halfmoveClock);
+        result = 31 * result + capturedPiece.hashCode();
+        return result;
     }
 
     public enum Flag {

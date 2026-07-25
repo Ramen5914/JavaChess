@@ -1,5 +1,6 @@
 package com.r4men.java_chess;
 
+import com.r4men.java_chess.type.Move;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
