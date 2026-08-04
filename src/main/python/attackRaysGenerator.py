@@ -19,12 +19,13 @@ import numpy as np
 # 11111111
 
 def main():
-    bitboard = make_long(63)
-
-    print_long(bitboard)
-    print()
-    print(get_long_str(bitboard))
-
+    print('{')
+    for i in range(64):
+        print('\t', end='')
+        print(get_long_str(make_long(i)), end='')
+        if i != 63:
+            print(',')
+    print('\n}')
 
 def get_vertical_bits(x: int, y: int) -> np.uint64:
     long = 0
@@ -107,7 +108,7 @@ def get_knight_bits(start_bit: int, x: int, y: int) -> np.uint64:
 
     if y >= 1 and x >= 2:
         long |= start_bit >> 10
-    if y >= 2 and x >= 2:
+    if y >= 2 and x >= 1:
         long |= start_bit >> 17
     if y >= 1 and x <= 6:
         long |= start_bit >> 6
@@ -115,19 +116,14 @@ def get_knight_bits(start_bit: int, x: int, y: int) -> np.uint64:
         long |= start_bit >> 15
     if y <= 6 and x >= 2:
         long |= start_bit << 6
-    if y <= 5 and x >= 2:
+    if y <= 5 and x >= 1:
         long |= start_bit << 15
     if y <= 6 and x <= 5:
         long |= start_bit << 10
-    if y 
+    if y <= 5 and x <= 6:
+        long |= start_bit << 17
 
-
-
-
-    long |= start_bit << 17
-
-    return np.uint64(0)
-
+    return np.uint64(long)
 
 def make_long(s8x8: int) -> np.uint64:
     x: int = s8x8 % 8
@@ -141,7 +137,7 @@ def make_long(s8x8: int) -> np.uint64:
     diagonal_bits = get_diagonal_bits(start_bit, x, y)
     knight_bits = get_knight_bits(start_bit, x, y)
 
-    return vertical_bits | horizontal_bits | diagonal_bits
+    return vertical_bits | horizontal_bits | diagonal_bits | knight_bits
 
 def print_long(long: np.uint64) -> None:
     for y in reversed(range(8)):

@@ -1,5 +1,7 @@
 package com.r4men.java_chess;
 
+import org.jetbrains.annotations.NotNull;
+
 public interface Direction {
     int toInt();
 

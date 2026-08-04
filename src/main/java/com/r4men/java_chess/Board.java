@@ -2,6 +2,7 @@ package com.r4men.java_chess;
 
 import com.r4men.java_chess.type.Move;
 import com.r4men.java_chess.type.Pair;
+import com.r4men.java_chess.type.Piece;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -145,7 +146,7 @@ public class Board {
         setPieceAt10x12(s10x12, Piece.EMPTY);
     }
 
-    void flipPlayerToMove() {
+    void advancePlayerToMove() {
         playerToMove = playerToMove.opposite();
         if (playerToMove.isWhite()) {
             fullmoveNumber++;

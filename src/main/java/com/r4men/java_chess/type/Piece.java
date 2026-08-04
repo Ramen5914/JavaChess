@@ -1,4 +1,4 @@
-package com.r4men.java_chess;
+package com.r4men.java_chess.type;
 
 public class Piece {
     public static final Piece EMPTY = new Piece();

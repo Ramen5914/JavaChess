@@ -1,5 +1,7 @@
 package com.r4men.java_chess;
 
+import com.r4men.java_chess.type.Piece;
+
 public final class FenCodec {
     public static void load(Board board, String fen) {
         boolean isValid = fen.matches("^\\s*((?:[rnbqkpRNBQKP1-8]{1,8}/){7}[rnbqkpRNBQKP1-8]{1,8})\\s[wWbB]\\s(-|[KQkq]{1,4})\\s(-|[a-h][36])\\s(\\d+)\\s(\\d+)\\s*");

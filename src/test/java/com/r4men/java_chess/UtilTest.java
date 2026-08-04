@@ -1,5 +1,6 @@
 package com.r4men.java_chess;
 
+import com.r4men.java_chess.type.Piece;
 import com.r4men.java_chess.type.Trio;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;

@@ -1,5 +1,6 @@
 package com.r4men.java_chess;
 
+import com.r4men.java_chess.type.Piece;
 import com.r4men.java_chess.type.Trio;
 import org.jetbrains.annotations.Nullable;
 
@@ -278,5 +279,11 @@ public final class Util {
         } else {
             throw new IllegalArgumentException("Squares " + from10x12 + " and " + to10x12 + " are not aligned in direction " + direction);
         }
+    }
+
+    public static boolean isCastlingPathClear10x12(Board board, int from10x12, int to10x12) {
+        boolean isPathClear = isPathClear10x12(board, from10x12, to10x12);
+
+        for ()
     }
 }

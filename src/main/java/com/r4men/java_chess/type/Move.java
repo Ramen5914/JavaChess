@@ -1,6 +1,5 @@
 package com.r4men.java_chess.type;
 
-import com.r4men.java_chess.Piece;
 import com.r4men.java_chess.Util;
 import org.jetbrains.annotations.NotNull;
 

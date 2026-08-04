@@ -1,6 +1,7 @@
 package com.r4men.java_chess;
 
 import com.r4men.java_chess.type.Move;
+import com.r4men.java_chess.type.Piece;
 
 public final class MoveApplier {
     public static void makeMove(Board board, Move move, boolean ignoreSelfCheck) {
@@ -14,27 +15,26 @@ public final class MoveApplier {
 
         int from10x12 = move.getFrom10x12();
         int to10x12 = move.getTo10x12();
-        Piece piece = board.getPieceAt10x12(from10x12);
+        Piece movedPiece = board.getPieceAt10x12(from10x12);
 
-        if (piece.isPawn() || move.isCapture()) {
+        if (movedPiece.isPawn() || move.isCapture()) {
             board.setHalfmoveClock(0);
         } else {
             board.incrementHalfmoveClock();
         }
 
-        board.flipPlayerToMove();
         board.emptyPieceAt10x12(from10x12);
         board.emptyPieceAt10x12(to10x12);
 
         if (move.isQuiet() || move.isDoublePawnPush()) {
-            board.setPieceAt10x12(to10x12, piece);
+            board.setPieceAt10x12(to10x12, movedPiece);
 
             if (move.isDoublePawnPush()) {
                 markEnPassantSquare(board, move);
             }
         } else if (move.isCapture()) {
             if (move.isPromotion()) {
-                Piece.Color color = piece.getColor();
+                Piece.Color color = movedPiece.getColor();
 
                 switch (color) {
                     case WHITE -> {
@@ -61,25 +61,27 @@ public final class MoveApplier {
                     }
                 }
             } else {
-                board.setPieceAt10x12(to10x12, piece);
+                board.setPieceAt10x12(to10x12, movedPiece);
 
                 if (move.isEnPassantCapture()) {
                     removeEnPassantPawn(board, move);
                 }
             }
+        } else if (move.isCastle()) {
+            doCastling(board, move, movedPiece);
         } else if (move.isKingCastle()) {
             // For kingside castling, the move is encoded with 'to' == rook's original square
             // King moves to the appropriate square, and rook is moved from its original square
-            if (piece.isWhite()) {
+            if (movedPiece.isWhite()) {
                 // King from e1 to g1
-                board.setPieceAt10x12(6, piece);
+                board.setPieceAt10x12(6, movedPiece);
 //                        emptySquare10x12(from);
                 // Rook moves to f1 (which is 'to')
                 board.setPieceAt10x12(5, Piece.WHITE_ROOK);
                 board.emptyPieceAt10x12(7);
             } else {
                 // King from e8 to g8
-                board.setPieceAt10x12(62, piece);
+                board.setPieceAt10x12(62, movedPiece);
 //                        emptySquare10x12(from);
                 // Rook moves to f8 (which is 'to')
                 board.setPieceAt10x12(61, Piece.BLACK_ROOK);
@@ -88,16 +90,16 @@ public final class MoveApplier {
         } else if (move.isQueenCastle()) {
             // For queenside castling, the move is encoded with 'to' == rook's original square
             // King moves to the appropriate square, and rook is moved from its original square
-            if (piece.isWhite()) {
+            if (movedPiece.isWhite()) {
                 // King from e1 to c1
-                board.setPieceAt10x12(0x17, piece);
+                board.setPieceAt10x12(0x17, movedPiece);
 //                        emptySquare10x12(from);
                 // Rook moves to d1 (which is 'to')
                 board.setPieceAt10x12(0x18, Piece.WHITE_ROOK);
                 board.emptyPieceAt10x12(0x15);
             } else {
                 // King from e8 to c8
-                board.setPieceAt10x12(58, piece);
+                board.setPieceAt10x12(58, movedPiece);
 //                        emptySquare10x12(from);
                 // Rook moves to d8 (which is 'to')
                 board.setPieceAt10x12(59, Piece.BLACK_ROOK);
@@ -110,12 +112,22 @@ public final class MoveApplier {
         }
 
         if (move.isCastle()) {
-            if (piece.isWhite()) {
+            if (movedPiece.isWhite()) {
                 board.andCastlingRights(0b1100);
             } else {
                 board.andCastlingRights(0b0011);
             }
         }
+
+        board.advancePlayerToMove();
+
+        if (AttackDetector.isKingInCheck(board, board.getPlayerToMove())) {
+            undoMove(board, move);
+        }
+    }
+
+    private static void doCastling(Board board, Move move, Piece movedPiece) {
+
     }
 
     public static void undoMove(Board board, Move move) {
@@ -124,7 +136,7 @@ public final class MoveApplier {
         Piece piece = board.getPieceAt10x12(to10x12);
 
         // p means previous
-        Piece.Color pPlayerToMove = board.getPlayerToMove().opposite();
+        Piece.Color pPlayerToMove = board.getPlayerToMove();
         Piece pPiece = move.capturedPiece();
 
         if (move.isCapture()) {

@@ -1,6 +1,7 @@
 package com.r4men.java_chess;
 
 import com.r4men.java_chess.type.Move;
+import com.r4men.java_chess.type.Piece;
 import com.r4men.java_chess.type.Trio;
 
 public final class MoveParser {

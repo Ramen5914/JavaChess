@@ -1,6 +1,9 @@
 package com.r4men.java_chess;
 
 import com.r4men.java_chess.type.Move;
+import com.r4men.java_chess.type.Piece;
+
+import java.util.Objects;
 
 public final class MoveValidator {
     // TODO move check test to the end of make move
@@ -10,7 +13,7 @@ public final class MoveValidator {
         Piece movedPiece = board.getPieceAt10x12(from10x12);
         Piece destinationPiece = board.getPieceAt10x12(to10x12);
 
-        if (from10x12 == to10x12 || !movedPiece.matchesColor(board.getPlayerToMove()) || destinationPiece.isOffBoard()) {
+        if (from10x12 == to10x12 || !movedPiece.matchesColor(board.getPlayerToMove()) || destinationPiece.isOffBoard() || destinationPiece != move.capturedPiece()) {
             return false;
         }
 
@@ -61,22 +64,74 @@ public final class MoveValidator {
     }
 
     static boolean isValidKnightMove(Board board, Move move, Piece.Color color) {
-        return false;
+        int from = move.getFrom10x12();
+        int to = move.getTo10x12();
+
+        if (board.getPieceAt10x12(to).getColor() == color) {
+            return false;
+        }
+
+        int rankDiff = Util.getRankDiff10x12(from, to);
+        int fileDiff = Util.getFileDiff10x12(from, to);
+
+        return Math.min(rankDiff, fileDiff) == 1 && rankDiff + fileDiff == 3;
     }
 
     static boolean isValidBishopMove(Board board, Move move, Piece.Color color) {
-        return false;
+        int from = move.getFrom10x12();
+        int to = move.getTo10x12();
+
+        boolean isDiagonal = Objects.requireNonNull(Util.getD10X12FromSquares(from, to)).isDiagonal();
+        if (isDiagonal && Util.isPathClear10x12(board, from, to)) {
+            if (move.isCapture()) {
+                return board.getPieceAt10x12(to).getColor() == color.opposite();
+            } else {
+                return board.getPieceAt10x12(to).isEmpty();
+            }
+        } else {
+            return false;
+        }
     }
 
     static boolean isValidRookMove(Board board, Move move, Piece.Color color) {
-        return false;
+        int from = move.getFrom10x12();
+        int to = move.getTo10x12();
+
+        boolean isOrthogonal = Objects.requireNonNull(Util.getD10X12FromSquares(from, to)).isOrthogonal();
+        if (isOrthogonal && Util.isPathClear10x12(board, from, to)) {
+            if (move.isCapture()) {
+                return board.getPieceAt10x12(to).getColor() == color.opposite();
+            } else {
+                return board.getPieceAt10x12(to).isEmpty();
+            }
+        } else {
+            return false;
+        }
     }
 
     static boolean isValidQueenMove(Board board, Move move, Piece.Color color) {
-        return false;
+        return isValidBishopMove(board, move, color) || isValidRookMove(board, move, color);
     }
 
     static boolean isValidKingMove(Board board, Move move, Piece.Color color) {
-        return false;
+        int from = move.getFrom10x12();
+        int to = move.getTo10x12();
+
+        if (move.isCastle()) {
+
+        } else {
+            int rankDiff = Util.getRankDiff10x12(from, to);
+            int fileDiff = Util.getFileDiff10x12(from, to);
+
+            if (Math.max(rankDiff, fileDiff) != 1) {
+                return false;
+            }
+
+            if (move.isCapture()) {
+                return board.getPieceAt10x12(to).getColor() == color.opposite();
+            } else {
+                return board.getPieceAt10x12(to).isEmpty();
+            }
+        }
     }
 }

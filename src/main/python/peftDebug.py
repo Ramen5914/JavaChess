@@ -24,7 +24,7 @@ def main():
                 board3.push(move3)
                 fenPositions.append(board3.fen())
 
-    os.chdir("C:/Users/omar/Documents/github/JavaChess")
+    os.chdir("/")
     subprocess.run(["gradlew.bat", "build"], check=True)
 
     depth = 1

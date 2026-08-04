@@ -2,6 +2,7 @@ package com.r4men.java_chess;
 
 import com.r4men.java_chess.type.Move;
 import com.r4men.java_chess.type.Pair;
+import com.r4men.java_chess.type.Piece;
 
 import java.util.ArrayList;
 import java.util.List;
